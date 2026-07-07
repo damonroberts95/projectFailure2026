@@ -22,12 +22,18 @@ const { Content } = await render(sketch);
 	image={sketch.data.ogImage}
 	type="article"
 >
-	<article>
+	<article class="card">
 		<span class="tag">Exhibit</span>
 		<h1>{sketch.data.title}</h1>
 		<p class="date">{sketch.data.pubDate.toDateString()}</p>
 
 		{sketch.data.youtubeId && <YouTubeEmbed videoId={sketch.data.youtubeId} title={sketch.data.title} />}
+
+		{
+			!sketch.data.youtubeId && sketch.data.ogImage && (
+				<img class="hero-image" src={sketch.data.ogImage} alt="" />
+			)
+		}
 
 		{
 			sketch.data.audioUrl && (
@@ -37,7 +43,9 @@ const { Content } = await render(sketch);
 			)
 		}
 
-		<Content />
+		<div class="prose">
+			<Content />
+		</div>
 
 		{
 			sketch.data.pdfFile && (
@@ -53,6 +61,14 @@ const { Content } = await render(sketch);
 </BaseLayout>
 
 <style>
+	.card {
+		background: #fff;
+		border-radius: var(--radius-card);
+		box-shadow: var(--shadow-card);
+		padding: 1.5rem;
+		max-width: 680px;
+		margin: 0 auto;
+	}
 	.tag {
 		display: inline-block;
 		font-family: var(--font-heading);
@@ -64,5 +80,13 @@ const { Content } = await render(sketch);
 	}
 	.date {
 		color: #666;
+	}
+	.hero-image {
+		width: 100%;
+		border-radius: calc(var(--radius-card) - 4px);
+		display: block;
+	}
+	.prose {
+		margin-top: 1rem;
 	}
 </style>
