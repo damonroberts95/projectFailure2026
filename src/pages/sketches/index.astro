@@ -64,16 +64,18 @@ const sketches = (await getCollection('sketches', ({ data }) => !data.draft)).so
 		padding: 1rem 1.25rem 1.25rem;
 	}
 	.genre {
-		display: inline-block;
+		display: block;
+		width: fit-content;
 		font-family: var(--font-heading);
 		background: var(--color-spark);
 		color: #1a1a1a;
 		padding: 0.1rem 0.5rem;
 		border-radius: 3px;
 		font-size: 0.75rem;
-		margin-bottom: 0.4rem;
+		margin-bottom: 0.5rem;
 	}
 	.card-body strong {
+		display: block;
 		font-size: 1.1rem;
 	}
 	.card-body p {

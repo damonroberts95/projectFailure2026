@@ -215,9 +215,10 @@ function generateThumbnail(title, genre) {
 	drawFlask(pixels, 90, 200, 11);
 
 	const textX = 460;
-	const titleScale = Math.min(9, Math.max(4, Math.floor((W - textX - 60) / textWidth(title, 1, 2))));
+	const titleScale = Math.min(9, Math.max(2, Math.floor((W - textX - 60) / textWidth(title, 1, 2))));
+	const genreScale = Math.min(titleScale - 1, Math.max(2, titleScale - 3));
 	drawText(pixels, title, textX, 260, titleScale, WHITE, 2);
-	drawText(pixels, genre.toUpperCase(), textX, 260 + (7 * titleScale + 30), Math.max(3, titleScale - 3), YELLOW, 2);
+	drawText(pixels, genre.toUpperCase(), textX, 260 + (7 * titleScale + 30), genreScale, YELLOW, 2);
 
 	return encodePNG(pixels, W, H);
 }

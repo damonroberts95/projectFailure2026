@@ -54,7 +54,9 @@ const thumbnail = sketch.data.ogImage ?? `/images/generated/${sketch.id}.png`;
 			)
 		}
 	</article>
-	<ShareButtons title={sketch.data.title} />
+	<div class="share-wrap">
+		<ShareButtons title={sketch.data.title} />
+	</div>
 </BaseLayout>
 
 <style>
@@ -85,5 +87,9 @@ const thumbnail = sketch.data.ogImage ?? `/images/generated/${sketch.id}.png`;
 	}
 	.prose {
 		margin-top: 1rem;
+	}
+	.share-wrap {
+		max-width: 680px;
+		margin: 1.5rem auto 0;
 	}
 </style>
