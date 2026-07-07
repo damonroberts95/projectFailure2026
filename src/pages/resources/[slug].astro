@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import YouTubeEmbed from '../../components/YouTubeEmbed.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -18,7 +19,8 @@ const { Content } = await render(resource);
 	<article>
 		<h1>{resource.data.title}</h1>
 		<p>Audience: {resource.data.audience}</p>
+		{resource.data.videoId && <YouTubeEmbed videoId={resource.data.videoId} title={resource.data.title} />}
 		<Content />
-		<p><a href={resource.data.file}>Download</a></p>
+		{resource.data.file && <p><a href={resource.data.file}>Download</a></p>}
 	</article>
 </BaseLayout>

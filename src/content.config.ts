@@ -54,8 +54,21 @@ const resources = defineCollection({
 		draft: z.boolean().default(false),
 		tags: z.array(z.string()).default([]),
 		audience: z.enum(['educator', 'student', 'general']).default('general'),
-		file: z.string(),
+		// a resource is either a downloadable file (PDF etc) or a recorded video, at least one
+		file: z.string().optional(),
+		videoId: z.string().optional(),
 	}),
 });
 
-export const collections = { blog, sketches, scripts, resources };
+const community = defineCollection({
+	// leading underscore (e.g. _template.md) is skipped, use it for copy-paste templates
+	loader: glob({ pattern: '**/[^_]*.md', base: './src/content/community' }),
+	schema: z.object({
+		title: z.string(),
+		pubDate: z.coerce.date(),
+		description: z.string(),
+		draft: z.boolean().default(false),
+	}),
+});
+
+export const collections = { blog, sketches, scripts, resources, community };

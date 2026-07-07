@@ -7,8 +7,9 @@ const resources = (await getCollection('resources', ({ data }) => !data.draft)).
 );
 ---
 
-<BaseLayout title="Resources" description="Downloadable worksheets and resources for educators.">
+<BaseLayout title="Resources" description="Scripts and event recordings from Project Failure.">
 	<h1>Resources</h1>
+	<p>Scripts to read or perform, and recordings from past events.</p>
 	<ul>
 		{
 			resources.map((resource) => (

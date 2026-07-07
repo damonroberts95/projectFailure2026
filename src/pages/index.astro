@@ -2,6 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
+const SURVEY_URL = 'https://survey123.arcgis.com/share/796b4aba20994178b0a272d94f536577?portalUrl=https://ngexplore.maps.arcgis.com';
+
 const sketches = (await getCollection('sketches', ({ data }) => !data.draft)).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
@@ -10,7 +12,14 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
 );
 
 const latestSketch = sketches[0];
-const latestPosts = posts.slice(0, 5);
+const latestPosts = posts.slice(0, 3);
+
+const signposts = [
+	{ href: '/sketches/', label: 'Watch the sketches', description: 'Science history, re-enacted badly on purpose.' },
+	{ href: '/wall-of-fame/', label: 'Wall of Fame', description: 'Real failed experiments, shared by our community.' },
+	{ href: '/blog/', label: 'Blog', description: 'Updates from the team.' },
+	{ href: '/resources/', label: 'Resources', description: 'Scripts and recordings, free to use.' },
+];
 ---
 
 <BaseLayout
@@ -18,7 +27,15 @@ const latestPosts = posts.slice(0, 5);
 	description="Comedy sketches educating people about science, one bad experiment at a time."
 >
 	<h1>Project Failure</h1>
-	<p>Comedy sketches educating people about science.</p>
+
+	<section>
+		<!-- TODO: draft copy below, needs client approval -->
+		<p>
+			Most of history's biggest scientific discoveries started with someone making a mess. Project
+			Failure re-enacts real science history — badly, on purpose — to prove that getting it wrong
+			is often exactly how you get it right.
+		</p>
+	</section>
 
 	{
 		latestSketch && (
@@ -28,6 +45,11 @@ const latestPosts = posts.slice(0, 5);
 			</section>
 		)
 	}
+
+	<section>
+		<h2>Got your own science fail?</h2>
+		<p><a class="button" href={SURVEY_URL} target="_blank" rel="noopener noreferrer">Share your story</a></p>
+	</section>
 
 	<section>
 		<h2>Latest posts</h2>
@@ -41,4 +63,47 @@ const latestPosts = posts.slice(0, 5);
 			}
 		</ul>
 	</section>
+
+	<nav class="signposts">
+		{
+			signposts.map((item) => (
+				<a class="signpost" href={item.href}>
+					<strong>{item.label}</strong>
+					<span>{item.description}</span>
+				</a>
+			))
+		}
+	</nav>
 </BaseLayout>
+
+<style>
+	.button {
+		display: inline-block;
+		background: #ffce45;
+		color: #1a1a1a;
+		padding: 0.6rem 1.2rem;
+		border-radius: 4px;
+		text-decoration: none;
+		font-weight: bold;
+		box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.15);
+	}
+	.signposts {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1rem;
+		margin-top: 2rem;
+	}
+	.signpost {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		padding: 1rem;
+		border: 1px solid #ddd;
+		border-radius: 6px;
+		text-decoration: none;
+		color: inherit;
+	}
+	.signpost:hover {
+		border-color: #999;
+	}
+</style>
