@@ -16,12 +16,9 @@ const sketches = (await getCollection('sketches', ({ data }) => !data.draft)).so
 			sketches.map((sketch) => (
 				<li class="card">
 					<a href={`/sketches/${sketch.id}/`}>
-						{sketch.data.ogImage ? (
-							<img src={sketch.data.ogImage} alt="" loading="lazy" />
-						) : (
-							<div class="placeholder" aria-hidden="true" />
-						)}
+						<img src={sketch.data.ogImage ?? `/images/generated/${sketch.id}.png`} alt="" loading="lazy" />
 						<div class="card-body">
+							<span class="genre">{sketch.data.genre}</span>
 							<strong>{sketch.data.title}</strong>
 							<p>{sketch.data.description}</p>
 						</div>
@@ -56,19 +53,25 @@ const sketches = (await getCollection('sketches', ({ data }) => !data.draft)).so
 		color: var(--color-ink);
 		text-decoration: none !important;
 	}
-	.card img,
-	.placeholder {
+	.card img {
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		display: block;
 		object-fit: cover;
 		background: var(--color-board);
 	}
-	.placeholder {
-		background-image: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.08), transparent 60%);
-	}
 	.card-body {
 		padding: 1rem 1.25rem 1.25rem;
+	}
+	.genre {
+		display: inline-block;
+		font-family: var(--font-heading);
+		background: var(--color-spark);
+		color: #1a1a1a;
+		padding: 0.1rem 0.5rem;
+		border-radius: 3px;
+		font-size: 0.75rem;
+		margin-bottom: 0.4rem;
 	}
 	.card-body strong {
 		font-size: 1.1rem;

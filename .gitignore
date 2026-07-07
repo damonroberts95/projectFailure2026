@@ -1,5 +1,7 @@
 # build output
 dist/
+# auto-generated fallback thumbnails (regenerated on every build)
+public/images/generated/
 # generated types
 .astro/
 

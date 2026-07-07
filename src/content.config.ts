@@ -8,6 +8,7 @@ const sketches = defineCollection({
 		pubDate: z.coerce.date(),
 		description: z.string(),
 		draft: z.boolean().default(false),
+		genre: z.string().default('Sketch'),
 		tags: z.array(z.string()).default([]),
 		ogImage: z.string().optional(),
 		youtubeId: z.string().optional(),

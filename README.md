@@ -58,14 +58,17 @@ above, with extra optional fields:
 title: "The Isolator"
 pubDate: 2026-07-07
 description: "One sentence summary"
+genre: "Science Comedy"    # shown as a small tag on the sketch, defaults to "Sketch" if omitted
 youtubeId: "dQw4w9WgXcQ"   # optional — YouTube video ID to embed
 pdfFile: "/downloads/the-isolator-script.pdf"   # optional — link to a downloadable script PDF
+ogImage: "/images/the-isolator-thumb.png"   # optional — thumbnail shown on the card and social shares
 ---
 
 Sketch description / synopsis goes here.
 ```
 
 PDFs go in `public/downloads/`; reference them with a path starting `/downloads/`.
+Thumbnails go in `public/images/`; same rule.
 
 ## Local development
 

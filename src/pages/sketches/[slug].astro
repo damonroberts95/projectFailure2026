@@ -14,26 +14,23 @@ export async function getStaticPaths() {
 
 const { sketch } = Astro.props;
 const { Content } = await render(sketch);
+const thumbnail = sketch.data.ogImage ?? `/images/generated/${sketch.id}.png`;
 ---
 
 <BaseLayout
 	title={sketch.data.title}
 	description={sketch.data.description}
-	image={sketch.data.ogImage}
+	image={thumbnail}
 	type="article"
 >
 	<article class="card">
-		<span class="tag">Exhibit</span>
+		<span class="tag">{sketch.data.genre}</span>
 		<h1>{sketch.data.title}</h1>
 		<p class="date">{sketch.data.pubDate.toDateString()}</p>
 
 		{sketch.data.youtubeId && <YouTubeEmbed videoId={sketch.data.youtubeId} title={sketch.data.title} />}
 
-		{
-			!sketch.data.youtubeId && sketch.data.ogImage && (
-				<img class="hero-image" src={sketch.data.ogImage} alt="" />
-			)
-		}
+		{!sketch.data.youtubeId && <img class="hero-image" src={thumbnail} alt="" />}
 
 		{
 			sketch.data.audioUrl && (

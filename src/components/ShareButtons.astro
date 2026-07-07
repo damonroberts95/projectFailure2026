@@ -1,51 +1,57 @@
 ---
 interface Props {
-	title: string;
+	title?: string;
 }
 
-const { title } = Astro.props;
+const { title = 'Project Failure' } = Astro.props;
 const pageURL = new URL(Astro.url.pathname, Astro.site).toString();
 
 const links = [
 	{
 		label: 'X',
+		className: 'x',
 		href: `https://x.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(pageURL)}`,
 	},
 	{
 		label: 'Facebook',
+		className: 'facebook',
 		href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageURL)}`,
 	},
 	{
 		label: 'WhatsApp',
+		className: 'whatsapp',
 		href: `https://wa.me/?text=${encodeURIComponent(`${title} ${pageURL}`)}`,
 	},
 ];
 ---
 
 <div class="share-buttons">
-	<span>Share:</span>
-	{
-		links.map((link) => (
-			<a href={link.href} target="_blank" rel="noopener noreferrer">
-				{link.label}
-			</a>
-		))
-	}
-	<button type="button" data-copy-url={pageURL}>
-		Copy link
-	</button>
+	<span class="label">Share this</span>
+	<div class="buttons">
+		{
+			links.map((link) => (
+				<a class={`share-btn ${link.className}`} href={link.href} target="_blank" rel="noopener noreferrer">
+					{link.label}
+				</a>
+			))
+		}
+		<button type="button" class="share-btn copy" data-copy-url={pageURL}>
+			<span class="btn-label">Copy link</span>
+		</button>
+	</div>
 </div>
 
 <script>
 	document.querySelectorAll<HTMLButtonElement>('button[data-copy-url]').forEach((button) => {
+		const label = button.querySelector<HTMLSpanElement>('.btn-label');
 		button.addEventListener('click', async () => {
 			const url = button.dataset.copyUrl;
-			if (!url) return;
+			if (!url || !label) return;
 			await navigator.clipboard.writeText(url);
-			const original = button.textContent;
-			button.textContent = 'Copied!';
+			const original = label.textContent;
+			label.textContent = 'Copied!';
 			setTimeout(() => {
-				button.textContent = original;
+				label.textContent = original;
 			}, 1500);
 		});
 	});
@@ -54,8 +60,53 @@ const links = [
 <style>
 	.share-buttons {
 		display: flex;
-		gap: 0.75rem;
-		align-items: center;
 		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem;
+	}
+	.label {
+		font-weight: 600;
+		font-size: 0.9rem;
+		color: var(--color-ink);
+	}
+	.buttons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	.share-btn {
+		display: inline-flex;
+		align-items: center;
+		border: none;
+		border-radius: 999px;
+		padding: 0.4rem 0.9rem;
+		font-size: 0.85rem;
+		font-weight: 700;
+		font-family: var(--font-body);
+		cursor: pointer;
+		text-decoration: none !important;
+		color: #fff;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+		transition:
+			transform 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+	.share-btn:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+	}
+	.share-btn.x {
+		background: #15181c;
+	}
+	.share-btn.facebook {
+		background: #1877f2;
+	}
+	.share-btn.whatsapp {
+		background: #25d366;
+		color: #0b1a10;
+	}
+	.share-btn.copy {
+		background: var(--color-accent);
+		color: var(--color-ink);
 	}
 </style>
