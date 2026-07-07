@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ShareButtons from '../../components/ShareButtons.astro';
 import YouTubeEmbed from '../../components/YouTubeEmbed.astro';
-import { getCollection, getEntry, render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
 	const sketches = await getCollection('sketches', ({ data }) => !data.draft);
@@ -14,7 +14,6 @@ export async function getStaticPaths() {
 
 const { sketch } = Astro.props;
 const { Content } = await render(sketch);
-const script = sketch.data.script ? await getEntry(sketch.data.script) : undefined;
 ---
 
 <BaseLayout
@@ -24,8 +23,9 @@ const script = sketch.data.script ? await getEntry(sketch.data.script) : undefin
 	type="article"
 >
 	<article>
+		<span class="tag">Exhibit</span>
 		<h1>{sketch.data.title}</h1>
-		<p>{sketch.data.pubDate.toDateString()}</p>
+		<p class="date">{sketch.data.pubDate.toDateString()}</p>
 
 		{sketch.data.youtubeId && <YouTubeEmbed videoId={sketch.data.youtubeId} title={sketch.data.title} />}
 
@@ -39,7 +39,30 @@ const script = sketch.data.script ? await getEntry(sketch.data.script) : undefin
 
 		<Content />
 
-		{script && <p><a href={`/scripts/${script.id}/`}>Read the script</a></p>}
+		{
+			sketch.data.pdfFile && (
+				<p>
+					<a class="button" href={sketch.data.pdfFile}>
+						Download the script (PDF)
+					</a>
+				</p>
+			)
+		}
 	</article>
 	<ShareButtons title={sketch.data.title} />
 </BaseLayout>
+
+<style>
+	.tag {
+		display: inline-block;
+		font-family: var(--font-heading);
+		background: var(--color-spark);
+		color: #1a1a1a;
+		padding: 0.15rem 0.6rem;
+		border-radius: 3px;
+		font-size: 0.85rem;
+	}
+	.date {
+		color: #666;
+	}
+</style>

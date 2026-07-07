@@ -13,11 +13,7 @@ const { title, description, image, type } = Astro.props;
 const nav = [
 	{ href: '/', label: 'Home' },
 	{ href: '/sketches/', label: 'Sketches' },
-	{ href: '/blog/', label: 'Blog' },
-	{ href: '/scripts/', label: 'Scripts' },
-	{ href: '/resources/', label: 'Resources' },
 	{ href: '/wall-of-fame/', label: 'Wall of Fame' },
-	{ href: '/about/', label: 'About' },
 ];
 ---
 
@@ -27,12 +23,16 @@ const nav = [
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" sizes="32x32" />
 		<link rel="alternate" type="application/rss+xml" title="Project Failure" href="/rss.xml" />
 		<SEO title={title} description={description} image={image} type={type} />
 	</head>
 	<body>
 		<header>
-			<a class="brand" href="/">Project Failure</a>
+			<a class="brand" href="/">
+				<img src="/favicon.svg" alt="" width="28" height="28" />
+				Project Failure
+			</a>
 			<nav>
 				{
 					nav.map((item) => (
@@ -51,26 +51,73 @@ const nav = [
 </html>
 
 <style is:global>
-	body {
-		font-family: system-ui, sans-serif;
-		margin: 0;
-		color: #1a1a1a;
+	:root {
+		--color-bg: #faf6ea;
+		--color-ink: #1a1a1a;
+		--color-board: #1e3a2b;
+		--color-board-frame: #6b4a30;
+		--color-note: #fff6a8;
+		--color-accent: #ffce45;
+		--color-spark: #ff6b6b;
+		--font-heading: 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+		--font-body: system-ui, sans-serif;
 	}
+
+	body {
+		font-family: var(--font-body);
+		margin: 0;
+		color: var(--color-ink);
+		background-color: var(--color-bg);
+		background-image:
+			linear-gradient(rgba(30, 58, 43, 0.05) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(30, 58, 43, 0.05) 1px, transparent 1px);
+		background-size: 24px 24px;
+	}
+
+	h1,
+	h2,
+	h3 {
+		font-family: var(--font-heading);
+		color: var(--color-board);
+	}
+
+	main a {
+		color: var(--color-board);
+		text-decoration-line: underline;
+		text-decoration-style: wavy;
+		text-decoration-color: var(--color-spark);
+		text-decoration-thickness: 1px;
+	}
+
 	header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem 1.5rem;
-		border-bottom: 1px solid #ddd;
+		border-bottom: 3px dashed var(--color-board-frame);
+		background: var(--color-bg);
 	}
 	header nav {
 		display: flex;
 		gap: 1rem;
 	}
+	header nav a {
+		text-decoration: none;
+		color: var(--color-ink);
+		font-weight: 600;
+	}
+	header nav a:hover {
+		color: var(--color-board);
+	}
 	.brand {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-family: var(--font-heading);
+		font-size: 1.3rem;
 		font-weight: bold;
 		text-decoration: none;
-		color: inherit;
+		color: var(--color-ink);
 	}
 	main {
 		max-width: 720px;
@@ -81,5 +128,15 @@ const nav = [
 		text-align: center;
 		padding: 1.5rem;
 		color: #666;
+	}
+	.button {
+		display: inline-block;
+		background: var(--color-accent);
+		color: var(--color-ink);
+		padding: 0.6rem 1.2rem;
+		border-radius: 4px;
+		text-decoration: none !important;
+		font-weight: bold;
+		box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.25);
 	}
 </style>

@@ -9,14 +9,56 @@ const sketches = (await getCollection('sketches', ({ data }) => !data.draft)).so
 
 <BaseLayout title="Sketches" description="Comedy sketches about science, from Project Failure.">
 	<h1>Sketches</h1>
-	<ul>
+	<ul class="reel">
 		{
 			sketches.map((sketch) => (
-				<li>
-					<a href={`/sketches/${sketch.id}/`}>{sketch.data.title}</a>
-					<p>{sketch.data.description}</p>
+				<li class="film-card">
+					<a href={`/sketches/${sketch.id}/`}>
+						<span class="sprocket" />
+						<strong>{sketch.data.title}</strong>
+						<p>{sketch.data.description}</p>
+						<span class="sprocket" />
+					</a>
 				</li>
 			))
 		}
 	</ul>
 </BaseLayout>
+
+<style>
+	.reel {
+		list-style: none;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.film-card a {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		background: var(--color-board);
+		color: #fff;
+		padding: 1rem 1.25rem;
+		text-decoration: none !important;
+	}
+	.film-card strong {
+		font-family: var(--font-heading);
+		font-size: 1.2rem;
+	}
+	.film-card p {
+		margin: 0.2rem 0 0;
+		color: #ddd;
+		font-size: 0.9rem;
+	}
+	.sprocket {
+		flex: none;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		background: var(--color-accent);
+	}
+	.film-card a:hover .sprocket {
+		background: var(--color-spark);
+	}
+</style>

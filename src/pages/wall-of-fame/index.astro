@@ -35,36 +35,26 @@ const submissions = (await getCollection('community', ({ data }) => !data.draft)
 
 <style>
 	.chalkboard {
-		background: #1e3a2b;
+		background: var(--color-board);
 		background-image:
 			radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.04), transparent 40%),
 			radial-gradient(circle at 85% 75%, rgba(255, 255, 255, 0.03), transparent 45%);
-		border: 10px solid #6b4a30;
+		border: 10px solid var(--color-board-frame);
 		border-radius: 6px;
 		padding: 2rem;
 		color: #f5f5f0;
 	}
 	.chalkboard h1 {
-		font-family: 'Segoe Print', 'Comic Sans MS', cursive;
+		color: #fff;
 		letter-spacing: 1px;
 		text-shadow:
 			0 0 2px rgba(255, 255, 255, 0.5),
 			1px 1px 0 rgba(255, 255, 255, 0.1);
 	}
 	del {
-		text-decoration-color: #ff6b6b;
+		text-decoration-color: var(--color-spark);
 		text-decoration-thickness: 3px;
 		opacity: 0.7;
-	}
-	.button {
-		display: inline-block;
-		background: #ffce45;
-		color: #1a1a1a;
-		padding: 0.6rem 1.2rem;
-		border-radius: 4px;
-		text-decoration: none;
-		font-weight: bold;
-		box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
 	}
 	.sticky-wall {
 		list-style: none;
@@ -75,7 +65,7 @@ const submissions = (await getCollection('community', ({ data }) => !data.draft)
 		gap: 1.5rem;
 	}
 	.sticky-note {
-		background: #fff6a8;
+		background: var(--color-note);
 		width: 220px;
 		min-height: 160px;
 		padding: 1rem;

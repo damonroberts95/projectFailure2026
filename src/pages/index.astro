@@ -7,18 +7,11 @@ const SURVEY_URL = 'https://survey123.arcgis.com/share/796b4aba20994178b0a272d94
 const sketches = (await getCollection('sketches', ({ data }) => !data.draft)).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
-const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
-
 const latestSketch = sketches[0];
-const latestPosts = posts.slice(0, 3);
 
 const signposts = [
 	{ href: '/sketches/', label: 'Watch the sketches', description: 'Science history, re-enacted badly on purpose.' },
 	{ href: '/wall-of-fame/', label: 'Wall of Fame', description: 'Real failed experiments, shared by our community.' },
-	{ href: '/blog/', label: 'Blog', description: 'Updates from the team.' },
-	{ href: '/resources/', label: 'Resources', description: 'Scripts and recordings, free to use.' },
 ];
 ---
 
@@ -26,48 +19,35 @@ const signposts = [
 	title="Home"
 	description="Comedy sketches educating people about science, one bad experiment at a time."
 >
-	<h1>Project Failure</h1>
-
-	<section>
+	<div class="hero">
+		<h1>Project Failure</h1>
 		<!-- TODO: draft copy below, needs client approval -->
 		<p>
 			Most of history's biggest scientific discoveries started with someone making a mess. Project
 			Failure re-enacts real science history — badly, on purpose — to prove that getting it wrong
 			is often exactly how you get it right.
 		</p>
-	</section>
+	</div>
 
 	{
 		latestSketch && (
-			<section>
-				<h2>Latest sketch</h2>
+			<section class="now-screening">
+				<span class="tag">Now screening</span>
 				<a href={`/sketches/${latestSketch.id}/`}>{latestSketch.data.title}</a>
 			</section>
 		)
 	}
 
-	<section>
+	<section class="mishap-report">
 		<h2>Got your own science fail?</h2>
-		<p><a class="button" href={SURVEY_URL} target="_blank" rel="noopener noreferrer">Share your story</a></p>
-	</section>
-
-	<section>
-		<h2>Latest posts</h2>
-		<ul>
-			{
-				latestPosts.map((post) => (
-					<li>
-						<a href={`/blog/${post.id}/`}>{post.data.title}</a>
-					</li>
-				))
-			}
-		</ul>
+		<p>Tell us what went wrong (and what you learned anyway).</p>
+		<p><a class="button" href={SURVEY_URL} target="_blank" rel="noopener noreferrer">Report a mishap</a></p>
 	</section>
 
 	<nav class="signposts">
 		{
-			signposts.map((item) => (
-				<a class="signpost" href={item.href}>
+			signposts.map((item, i) => (
+				<a class={`signpost accent-${i % 2}`} href={item.href}>
 					<strong>{item.label}</strong>
 					<span>{item.description}</span>
 				</a>
@@ -77,16 +57,80 @@ const signposts = [
 </BaseLayout>
 
 <style>
-	.button {
-		display: inline-block;
-		background: #ffce45;
-		color: #1a1a1a;
-		padding: 0.6rem 1.2rem;
-		border-radius: 4px;
-		text-decoration: none;
-		font-weight: bold;
-		box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.15);
+	.hero {
+		position: relative;
+		padding: 1.5rem 1.5rem 0.5rem;
+		background: #fff;
+		box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
 	}
+	.hero::before,
+	.hero::after {
+		content: '';
+		position: absolute;
+		top: -10px;
+		width: 60px;
+		height: 22px;
+		background: var(--color-accent);
+		opacity: 0.85;
+		box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+	}
+	.hero::before {
+		left: 20px;
+		transform: rotate(-6deg);
+	}
+	.hero::after {
+		right: 20px;
+		transform: rotate(5deg);
+	}
+
+	.now-screening {
+		margin-top: 2rem;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		background: var(--color-board);
+		color: #fff;
+		padding: 1rem 1.5rem;
+		border-radius: 4px;
+	}
+	.now-screening a {
+		color: #fff !important;
+		text-decoration-color: var(--color-accent) !important;
+		font-weight: bold;
+		font-size: 1.1rem;
+	}
+	.now-screening .tag {
+		font-family: var(--font-heading);
+		background: var(--color-spark);
+		color: #1a1a1a;
+		padding: 0.2rem 0.6rem;
+		border-radius: 3px;
+		font-size: 0.85rem;
+		white-space: nowrap;
+	}
+
+	.mishap-report {
+		margin-top: 2rem;
+		padding: 1.5rem;
+		background: repeating-linear-gradient(
+			45deg,
+			var(--color-accent),
+			var(--color-accent) 12px,
+			#1a1a1a 12px,
+			#1a1a1a 24px
+		);
+	}
+	.mishap-report h2,
+	.mishap-report p {
+		background: var(--color-bg);
+		padding: 0.5rem 1rem;
+		margin: 0.4rem 0;
+		display: inline-block;
+	}
+	.mishap-report h2 {
+		margin-top: 0;
+	}
+
 	.signposts {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
@@ -98,12 +142,16 @@ const signposts = [
 		flex-direction: column;
 		gap: 0.25rem;
 		padding: 1rem;
-		border: 1px solid #ddd;
-		border-radius: 6px;
-		text-decoration: none;
-		color: inherit;
+		background: #fff;
+		border-left: 6px solid var(--color-accent);
+		box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+		text-decoration: none !important;
+		color: var(--color-ink);
+	}
+	.signpost.accent-1 {
+		border-left-color: var(--color-spark);
 	}
 	.signpost:hover {
-		border-color: #999;
+		transform: translateY(-2px);
 	}
 </style>
