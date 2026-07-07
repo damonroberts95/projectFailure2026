@@ -51,6 +51,21 @@ const nav = [
 </html>
 
 <style is:global>
+	@font-face {
+		font-family: 'Permanent Marker';
+		src: url('/fonts/permanent-marker.woff2') format('woff2');
+		font-weight: 400;
+		font-style: normal;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Caveat';
+		src: url('/fonts/caveat-bold.woff2') format('woff2');
+		font-weight: 700;
+		font-style: normal;
+		font-display: swap;
+	}
+
 	:root {
 		--color-bg: #faf6ea;
 		--color-ink: #1a1a1a;
@@ -59,13 +74,25 @@ const nav = [
 		--color-note: #fff6a8;
 		--color-accent: #ffce45;
 		--color-spark: #ff6b6b;
-		--font-heading: 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+		--font-heading: 'Permanent Marker', cursive;
 		--font-body: system-ui, sans-serif;
+		/* shared "card" recipe for content containers (hero, CTAs, signposts) */
+		--radius-card: 10px;
+		--shadow-card: 0 4px 14px rgba(0, 0, 0, 0.12);
+		/* flat "sticker" shadow, reserved for paper/tape accents (sticky notes, film labels) */
+		--shadow-sticker: 3px 3px 0 rgba(26, 26, 26, 0.18);
 	}
 
+	html,
+	body {
+		height: 100%;
+	}
 	body {
 		font-family: var(--font-body);
 		margin: 0;
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
 		color: var(--color-ink);
 		background-color: var(--color-bg);
 		background-image:
@@ -74,19 +101,28 @@ const nav = [
 		background-size: 24px 24px;
 	}
 
-	h1,
+	h1 {
+		font-family: var(--font-heading);
+		color: var(--color-board);
+	}
 	h2,
 	h3 {
-		font-family: var(--font-heading);
+		font-family: var(--font-body);
+		font-weight: 800;
+		letter-spacing: -0.01em;
 		color: var(--color-board);
 	}
 
 	main a {
 		color: var(--color-board);
 		text-decoration-line: underline;
+		text-decoration-style: solid;
+		text-decoration-color: rgba(30, 58, 43, 0.35);
+		text-underline-offset: 2px;
+	}
+	main a:hover {
 		text-decoration-style: wavy;
 		text-decoration-color: var(--color-spark);
-		text-decoration-thickness: 1px;
 	}
 
 	header {
@@ -120,23 +156,36 @@ const nav = [
 		color: var(--color-ink);
 	}
 	main {
-		max-width: 720px;
+		flex: 1 0 auto;
+		width: 100%;
+		max-width: 960px;
 		margin: 0 auto;
 		padding: 2rem 1.5rem;
+		box-sizing: border-box;
 	}
 	footer {
+		flex-shrink: 0;
 		text-align: center;
-		padding: 1.5rem;
-		color: #666;
+		padding: 0.75rem;
+		border-top: 1px dashed var(--color-board-frame);
+		color: #999;
+		font-size: 0.8rem;
+	}
+	footer p {
+		margin: 0;
 	}
 	.button {
 		display: inline-block;
 		background: var(--color-accent);
 		color: var(--color-ink);
-		padding: 0.6rem 1.2rem;
-		border-radius: 4px;
+		padding: 0.7rem 1.4rem;
+		border-radius: 999px;
 		text-decoration: none !important;
 		font-weight: bold;
-		box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.25);
+		box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+		transition: transform 0.15s ease;
+	}
+	.button:hover {
+		transform: translateY(-1px);
 	}
 </style>

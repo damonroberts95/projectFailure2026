@@ -11,7 +11,7 @@ const submissions = (await getCollection('community', ({ data }) => !data.draft)
 
 <BaseLayout title="Wall of Fame" description="Real science failures, shared by our community, that turned out fine in the end.">
 	<div class="chalkboard">
-		<h1><del>Wall of Shame</del> Wall of Fame</h1>
+		<h1>Wall of <del>Shame</del> <span class="fame">Fame</span></h1>
 		<p>
 			Every scientist has a story about the experiment that went sideways. Share yours and it might
 			end up here.
@@ -55,6 +55,13 @@ const submissions = (await getCollection('community', ({ data }) => !data.draft)
 		text-decoration-color: var(--color-spark);
 		text-decoration-thickness: 3px;
 		opacity: 0.7;
+	}
+	.fame {
+		display: inline-block;
+		font-family: 'Caveat', cursive;
+		color: var(--color-spark);
+		transform: rotate(-5deg);
+		font-size: 1.4em;
 	}
 	.sticky-wall {
 		list-style: none;
