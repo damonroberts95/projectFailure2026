@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ShareButtons from '../../components/ShareButtons.astro';
+import { getCollection, getEntry, render } from 'astro:content';
+
+export async function getStaticPaths() {
+	const scripts = await getCollection('scripts', ({ data }) => !data.draft);
+	return scripts.map((script) => ({
+		params: { slug: script.id },
+		props: { script },
+	}));
+}
+
+const { script } = Astro.props;
+const { Content } = await render(script);
+const sketch = script.data.sketch ? await getEntry(script.data.sketch) : undefined;
+---
+
+<BaseLayout
+	title={script.data.title}
+	description={script.data.description}
+	image={script.data.ogImage}
+	type="article"
+>
+	<article>
+		<h1>{script.data.title}</h1>
+		<p>{script.data.pubDate.toDateString()}</p>
+
+		<Content />
+
+		{script.data.pdfFile && <p><a href={script.data.pdfFile}>Download PDF</a></p>}
+		{sketch && <p><a href={`/sketches/${sketch.id}/`}>Watch the sketch</a></p>}
+	</article>
+	<ShareButtons title={script.data.title} />
+</BaseLayout>

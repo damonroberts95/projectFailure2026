@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const resources = (await getCollection('resources', ({ data }) => !data.draft)).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<BaseLayout title="Resources" description="Downloadable worksheets and resources for educators.">
+	<h1>Resources</h1>
+	<ul>
+		{
+			resources.map((resource) => (
+				<li>
+					<a href={`/resources/${resource.id}/`}>{resource.data.title}</a>
+					<p>{resource.data.description}</p>
+				</li>
+			))
+		}
+	</ul>
+</BaseLayout>

@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ShareButtons from '../../components/ShareButtons.astro';
+import YouTubeEmbed from '../../components/YouTubeEmbed.astro';
+import { getCollection, getEntry, render } from 'astro:content';
+
+export async function getStaticPaths() {
+	const sketches = await getCollection('sketches', ({ data }) => !data.draft);
+	return sketches.map((sketch) => ({
+		params: { slug: sketch.id },
+		props: { sketch },
+	}));
+}
+
+const { sketch } = Astro.props;
+const { Content } = await render(sketch);
+const script = sketch.data.script ? await getEntry(sketch.data.script) : undefined;
+---
+
+<BaseLayout
+	title={sketch.data.title}
+	description={sketch.data.description}
+	image={sketch.data.ogImage}
+	type="article"
+>
+	<article>
+		<h1>{sketch.data.title}</h1>
+		<p>{sketch.data.pubDate.toDateString()}</p>
+
+		{sketch.data.youtubeId && <YouTubeEmbed videoId={sketch.data.youtubeId} title={sketch.data.title} />}
+
+		{
+			sketch.data.audioUrl && (
+				<audio controls src={sketch.data.audioUrl}>
+					Your browser does not support the audio element.
+				</audio>
+			)
+		}
+
+		<Content />
+
+		{script && <p><a href={`/scripts/${script.id}/`}>Read the script</a></p>}
+	</article>
+	<ShareButtons title={sketch.data.title} />
+</BaseLayout>

@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const scripts = (await getCollection('scripts', ({ data }) => !data.draft)).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<BaseLayout title="Scripts" description="Read the scripts behind Project Failure's sketches.">
+	<h1>Scripts</h1>
+	<ul>
+		{
+			scripts.map((script) => (
+				<li>
+					<a href={`/scripts/${script.id}/`}>{script.data.title}</a>
+					<p>{script.data.description}</p>
+				</li>
+			))
+		}
+	</ul>
+</BaseLayout>

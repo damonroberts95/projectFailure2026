@@ -1,0 +1,84 @@
+---
+import SEO from '../components/SEO.astro';
+
+interface Props {
+	title: string;
+	description: string;
+	image?: string;
+	type?: 'website' | 'article';
+}
+
+const { title, description, image, type } = Astro.props;
+
+const nav = [
+	{ href: '/', label: 'Home' },
+	{ href: '/sketches/', label: 'Sketches' },
+	{ href: '/blog/', label: 'Blog' },
+	{ href: '/scripts/', label: 'Scripts' },
+	{ href: '/resources/', label: 'Resources' },
+	{ href: '/about/', label: 'About' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="alternate" type="application/rss+xml" title="Project Failure" href="/rss.xml" />
+		<SEO title={title} description={description} image={image} type={type} />
+	</head>
+	<body>
+		<header>
+			<a class="brand" href="/">Project Failure</a>
+			<nav>
+				{
+					nav.map((item) => (
+						<a href={item.href}>{item.label}</a>
+					))
+				}
+			</nav>
+		</header>
+		<main>
+			<slot />
+		</main>
+		<footer>
+			<p>&copy; {new Date().getFullYear()} Project Failure.</p>
+		</footer>
+	</body>
+</html>
+
+<style is:global>
+	body {
+		font-family: system-ui, sans-serif;
+		margin: 0;
+		color: #1a1a1a;
+	}
+	header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1rem 1.5rem;
+		border-bottom: 1px solid #ddd;
+	}
+	header nav {
+		display: flex;
+		gap: 1rem;
+	}
+	.brand {
+		font-weight: bold;
+		text-decoration: none;
+		color: inherit;
+	}
+	main {
+		max-width: 720px;
+		margin: 0 auto;
+		padding: 2rem 1.5rem;
+	}
+	footer {
+		text-align: center;
+		padding: 1.5rem;
+		color: #666;
+	}
+</style>

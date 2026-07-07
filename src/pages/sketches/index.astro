@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const sketches = (await getCollection('sketches', ({ data }) => !data.draft)).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<BaseLayout title="Sketches" description="Comedy sketches about science, from Project Failure.">
+	<h1>Sketches</h1>
+	<ul>
+		{
+			sketches.map((sketch) => (
+				<li>
+					<a href={`/sketches/${sketch.id}/`}>{sketch.data.title}</a>
+					<p>{sketch.data.description}</p>
+				</li>
+			))
+		}
+	</ul>
+</BaseLayout>
