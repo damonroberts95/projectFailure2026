@@ -2,8 +2,11 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
+import cloudflare from '@astrojs/cloudflare';
+
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://www.projectfailure.co.uk',
-	integrations: [sitemap()],
+  site: 'https://www.projectfailure.co.uk',
+  integrations: [sitemap()],
+  adapter: cloudflare(),
 });
