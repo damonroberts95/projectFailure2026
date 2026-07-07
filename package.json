@@ -10,6 +10,7 @@
     "dev": "astro dev",
     "prebuild": "node scripts/generate-thumbnails.mjs",
     "build": "astro build",
+    "test:thumbnails": "node scripts/test-thumbnails.mjs",
     "preview": "npm run build && wrangler dev",
     "astro": "astro",
     "generate-types": "wrangler types",

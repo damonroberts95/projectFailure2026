@@ -8,9 +8,15 @@ const sketches = defineCollection({
 		pubDate: z.coerce.date(),
 		description: z.string(),
 		draft: z.boolean().default(false),
+		// shows locally (astro dev), hidden from production builds — for example/
+		// throwaway content, see src/lib/publish.ts
+		test: z.boolean().default(false),
 		genre: z.string().default('Sketch'),
 		tags: z.array(z.string()).default([]),
 		ogImage: z.string().optional(),
+		// picks the auto-generated fallback thumbnail's icon; ignored if ogImage is set.
+		// see README for the list of available names.
+		icon: z.string().optional(),
 		youtubeId: z.string().optional(),
 		audioUrl: z.string().optional(),
 		pdfFile: z.string().optional(),
@@ -25,6 +31,9 @@ const community = defineCollection({
 		pubDate: z.coerce.date(),
 		description: z.string(),
 		draft: z.boolean().default(false),
+		// shows locally (astro dev), hidden from production builds — for example/
+		// throwaway content, see src/lib/publish.ts
+		test: z.boolean().default(false),
 	}),
 });
 

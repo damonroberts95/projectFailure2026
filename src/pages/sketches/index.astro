@@ -1,23 +1,23 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import { isPublished } from '../../lib/publish';
 
-const sketches = (await getCollection('sketches', ({ data }) => !data.draft)).sort(
+const sketches = (await getCollection('sketches', ({ data }) => isPublished(data))).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
 
 <BaseLayout title="Sketches" description="Comedy sketches about science, from Project Failure.">
 	<h1>Sketches</h1>
-	<p>Science history, re-enacted badly on purpose.</p>
 
-	<ul class="grid">
+	<ul class="screen-grid sketches-grid">
 		{
 			sketches.map((sketch) => (
-				<li class="card">
-					<a href={`/sketches/${sketch.id}/`}>
+				<li>
+					<a class="screen-card" href={`/sketches/${sketch.id}/`}>
 						<img src={sketch.data.ogImage ?? `/images/generated/${sketch.id}.png`} alt="" loading="lazy" />
-						<div class="card-body">
+						<div class="screen-card-body">
 							<span class="genre">{sketch.data.genre}</span>
 							<strong>{sketch.data.title}</strong>
 							<p>{sketch.data.description}</p>
@@ -30,55 +30,12 @@ const sketches = (await getCollection('sketches', ({ data }) => !data.draft)).so
 </BaseLayout>
 
 <style>
-	.grid {
+	.sketches-grid {
 		list-style: none;
 		padding: 0;
 		margin: 2rem 0 0;
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-		gap: 1.5rem;
 	}
-	.card {
-		background: #fff;
-		border-radius: var(--radius-card);
-		box-shadow: var(--shadow-card);
-		overflow: hidden;
-		transition: transform 0.15s ease;
-	}
-	.card:hover {
-		transform: translateY(-3px);
-	}
-	.card a {
-		display: block;
-		color: var(--color-ink);
-		text-decoration: none !important;
-	}
-	.card img {
-		width: 100%;
-		aspect-ratio: 16 / 9;
-		display: block;
-		object-fit: cover;
-		background: var(--color-board);
-	}
-	.card-body {
-		padding: 1rem 1.25rem 1.25rem;
-	}
-	.genre {
-		display: block;
-		width: fit-content;
-		font-family: var(--font-heading);
-		background: var(--color-spark);
-		color: #1a1a1a;
-		padding: 0.1rem 0.5rem;
-		border-radius: 3px;
-		font-size: 0.75rem;
-		margin-bottom: 0.5rem;
-	}
-	.card-body strong {
-		display: block;
-		font-size: 1.1rem;
-	}
-	.card-body p {
+	.screen-card-body p {
 		margin: 0.35rem 0 0;
 		color: #555;
 		font-size: 0.9rem;

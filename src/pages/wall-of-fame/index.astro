@@ -1,27 +1,34 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import SurveyModal from '../../components/SurveyModal.astro';
 import { getCollection } from 'astro:content';
+import { noteColor, foldCorner } from '../../lib/noteColor';
+import { isPublished } from '../../lib/publish';
 
-const SURVEY_URL = 'https://survey123.arcgis.com/share/796b4aba20994178b0a272d94f536577?portalUrl=https://ngexplore.maps.arcgis.com';
-
-const submissions = (await getCollection('community', ({ data }) => !data.draft)).sort(
+const submissions = (await getCollection('community', ({ data }) => isPublished(data))).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
 
 <BaseLayout title="Wall of Fame" description="Real science failures, shared by our community, that turned out fine in the end.">
 	<div class="chalkboard">
-		<h1>Wall of <del>Shame</del> <span class="fame">Fame</span></h1>
+		<div class="title-row">
+			<h1>Wall of <span class="crossed">Shame</span> <span class="fame">Fame</span></h1>
+			<SurveyModal />
+		</div>
 		<p>
 			Every scientist has a story about the experiment that went sideways. Share yours and it might
 			end up here.
 		</p>
-		<p><a class="button" href={SURVEY_URL} target="_blank" rel="noopener noreferrer">Share your story</a></p>
 
 		<ul class="sticky-wall">
 			{
 				submissions.map((entry, i) => (
-					<li class={`sticky-note tilt-${i % 4}`}>
+					<li
+						class={`sticky-note tilt-${i % 4} fold-${foldCorner(entry.id)}`}
+						style={`--note-color: ${noteColor(entry.id)}`}
+						transition:name={`note-${entry.id}`}
+					>
 						<a href={`/wall-of-fame/${entry.id}/`}>
 							<strong>{entry.data.title}</strong>
 							<p>{entry.data.description}</p>
@@ -34,27 +41,41 @@ const submissions = (await getCollection('community', ({ data }) => !data.draft)
 </BaseLayout>
 
 <style>
-	.chalkboard {
-		background: var(--color-board);
-		background-image:
-			radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.04), transparent 40%),
-			radial-gradient(circle at 85% 75%, rgba(255, 255, 255, 0.03), transparent 45%);
-		border: 10px solid var(--color-board-frame);
-		border-radius: 6px;
-		padding: 2rem;
-		color: #f5f5f0;
+	.title-row {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 1.5rem;
 	}
 	.chalkboard h1 {
-		color: #fff;
-		letter-spacing: 1px;
-		text-shadow:
-			0 0 2px rgba(255, 255, 255, 0.5),
-			1px 1px 0 rgba(255, 255, 255, 0.1);
+		margin: 0;
 	}
-	del {
-		text-decoration-color: var(--color-spark);
-		text-decoration-thickness: 3px;
-		opacity: 0.7;
+	/* hand-scribbled cross-out: two overlapping, slightly-mismatched strokes
+	   instead of one clean text-decoration line */
+	.crossed {
+		position: relative;
+		display: inline-block;
+	}
+	.crossed::before,
+	.crossed::after {
+		content: '';
+		position: absolute;
+		left: -4%;
+		right: -6%;
+		height: 3px;
+		background: var(--color-spark);
+		border-radius: 2px;
+		opacity: 0.85;
+	}
+	.crossed::before {
+		top: 46%;
+		transform: rotate(-5deg);
+	}
+	.crossed::after {
+		top: 56%;
+		transform: rotate(2deg);
+		opacity: 0.65;
 	}
 	.fame {
 		display: inline-block;
@@ -72,14 +93,49 @@ const submissions = (await getCollection('community', ({ data }) => !data.draft)
 		gap: 1.5rem;
 	}
 	.sticky-note {
-		background: var(--color-note);
+		position: relative;
+		background: var(--note-color);
+		background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.35), transparent 45%);
 		width: 220px;
 		min-height: 160px;
-		padding: 1rem;
-		box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+		padding: 1.25rem 1rem 1rem;
+		box-shadow: 3px 4px 10px rgba(0, 0, 0, 0.45);
+		transition:
+			transform 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+	/* one verified triangle shape (bottom-right), mirrored via transform for the
+	   other corners rather than re-derived by hand — guarantees they stay correct */
+	.sticky-note::after {
+		content: '';
+		position: absolute;
+		width: 0;
+		height: 0;
+		border-style: solid;
+		border-width: 0 0 16px 16px;
+		border-color: transparent transparent rgba(0, 0, 0, 0.2) transparent;
+	}
+	.fold-br::after {
+		bottom: 0;
+		right: 0;
+	}
+	.fold-bl::after {
+		bottom: 0;
+		left: 0;
+		transform: scaleX(-1);
+	}
+	.fold-tr::after {
+		top: 0;
+		right: 0;
+		transform: scaleY(-1);
+	}
+	.fold-tl::after {
+		top: 0;
+		left: 0;
+		transform: scale(-1, -1);
 	}
 	.sticky-note a {
-		color: #1a1a1a;
+		color: var(--color-ink);
 		text-decoration: none;
 		display: block;
 	}
@@ -97,5 +153,6 @@ const submissions = (await getCollection('community', ({ data }) => !data.draft)
 	}
 	.sticky-note:hover {
 		transform: rotate(0deg) scale(1.03);
+		box-shadow: 4px 6px 14px rgba(0, 0, 0, 0.5);
 	}
 </style>

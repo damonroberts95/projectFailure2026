@@ -1,8 +1,9 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
+import { isPublished } from '../lib/publish';
 
 export async function GET(context) {
-	const sketches = await getCollection('sketches', ({ data }) => !data.draft);
+	const sketches = await getCollection('sketches', ({ data }) => isPublished(data));
 
 	const items = sketches
 		.map((sketch) => ({

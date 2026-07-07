@@ -1,0 +1,87 @@
+---
+// Same "Share your story" marker-button as before, but opens the Survey123
+// form in an on-site modal instead of a new tab. Reused on Home + Wall of Fame
+// so both stay in sync.
+interface Props {
+	label?: string;
+}
+const { label = 'Share your story' } = Astro.props;
+const SURVEY_URL = 'https://survey123.arcgis.com/share/796b4aba20994178b0a272d94f536577?portalUrl=https://ngexplore.maps.arcgis.com';
+const modalId = `survey-modal-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<button type="button" class="marker-button" data-open-survey={modalId}>
+	<span class="cap-band" aria-hidden="true" />
+	{label}
+</button>
+
+<dialog id={modalId} class="survey-dialog">
+	<button type="button" class="survey-close" data-close-survey aria-label="Close">&times;</button>
+	<iframe class="survey-iframe" data-src={SURVEY_URL} title="Share your story" loading="lazy" />
+</dialog>
+
+<script>
+	function initSurveyModals() {
+		document.querySelectorAll<HTMLButtonElement>('[data-open-survey]').forEach((btn) => {
+			if (btn.dataset.bound) return;
+			btn.dataset.bound = '1';
+			btn.addEventListener('click', () => {
+				const id = btn.getAttribute('data-open-survey');
+				const dialog = id && document.getElementById(id);
+				if (!(dialog instanceof HTMLDialogElement)) return;
+				const iframe = dialog.querySelector<HTMLIFrameElement>('iframe[data-src]');
+				if (iframe && !iframe.src && iframe.dataset.src) iframe.src = iframe.dataset.src;
+				dialog.showModal();
+			});
+		});
+		document.querySelectorAll<HTMLButtonElement>('[data-close-survey]').forEach((btn) => {
+			if (btn.dataset.bound) return;
+			btn.dataset.bound = '1';
+			btn.addEventListener('click', () => btn.closest('dialog')?.close());
+		});
+		document.querySelectorAll<HTMLDialogElement>('.survey-dialog').forEach((dialog) => {
+			if (dialog.dataset.bound) return;
+			dialog.dataset.bound = '1';
+			dialog.addEventListener('click', (e) => {
+				if (e.target === dialog) dialog.close();
+			});
+		});
+	}
+	initSurveyModals();
+	document.addEventListener('astro:page-load', initSurveyModals);
+</script>
+
+<style>
+	.survey-dialog {
+		width: min(600px, 92vw);
+		height: min(700px, 88vh);
+		padding: 0;
+		border: none;
+		border-radius: var(--radius-card);
+		box-shadow: var(--shadow-card);
+	}
+	.survey-dialog::backdrop {
+		background: rgba(0, 0, 0, 0.55);
+	}
+	.survey-close {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		width: 32px;
+		height: 32px;
+		border: none;
+		border-radius: 50%;
+		background: var(--color-ink);
+		color: #fff;
+		font-size: 1.2rem;
+		line-height: 1;
+		cursor: pointer;
+		z-index: 1;
+	}
+	.survey-iframe {
+		width: 100%;
+		height: 100%;
+		border: none;
+		display: block;
+	}
+</style>

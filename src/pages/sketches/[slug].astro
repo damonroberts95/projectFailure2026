@@ -3,9 +3,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ShareButtons from '../../components/ShareButtons.astro';
 import YouTubeEmbed from '../../components/YouTubeEmbed.astro';
 import { getCollection, render } from 'astro:content';
+import { isPublished } from '../../lib/publish';
 
 export async function getStaticPaths() {
-	const sketches = await getCollection('sketches', ({ data }) => !data.draft);
+	const sketches = await getCollection('sketches', ({ data }) => isPublished(data));
 	return sketches.map((sketch) => ({
 		params: { slug: sketch.id },
 		props: { sketch },
@@ -23,6 +24,7 @@ const thumbnail = sketch.data.ogImage ?? `/images/generated/${sketch.id}.png`;
 	image={thumbnail}
 	type="article"
 >
+	<a class="back-link" href="/sketches/">&larr; Back to Sketches</a>
 	<article class="card">
 		<span class="tag">{sketch.data.genre}</span>
 		<h1>{sketch.data.title}</h1>
@@ -46,11 +48,20 @@ const thumbnail = sketch.data.ogImage ?? `/images/generated/${sketch.id}.png`;
 
 		{
 			sketch.data.pdfFile && (
-				<p>
+				<div class="script-block">
+					<details class="script-expand">
+						<summary>Read the script</summary>
+						<iframe
+							class="script-frame"
+							data-src={sketch.data.pdfFile}
+							title={`${sketch.data.title} script`}
+							loading="lazy"
+						/>
+					</details>
 					<a class="button" href={sketch.data.pdfFile}>
 						Download the script (PDF)
 					</a>
-				</p>
+				</div>
 			)
 		}
 	</article>
@@ -60,6 +71,13 @@ const thumbnail = sketch.data.ogImage ?? `/images/generated/${sketch.id}.png`;
 </BaseLayout>
 
 <style>
+	.back-link {
+		display: block;
+		max-width: 680px;
+		margin: 0 auto 1rem;
+		font-weight: 600;
+		font-size: 0.9rem;
+	}
 	.card {
 		background: #fff;
 		border-radius: var(--radius-card);
@@ -72,7 +90,7 @@ const thumbnail = sketch.data.ogImage ?? `/images/generated/${sketch.id}.png`;
 		display: inline-block;
 		font-family: var(--font-heading);
 		background: var(--color-spark);
-		color: #1a1a1a;
+		color: var(--color-ink);
 		padding: 0.15rem 0.6rem;
 		border-radius: 3px;
 		font-size: 0.85rem;
@@ -88,8 +106,48 @@ const thumbnail = sketch.data.ogImage ?? `/images/generated/${sketch.id}.png`;
 	.prose {
 		margin-top: 1rem;
 	}
+	.script-block {
+		margin-top: 1.5rem;
+	}
+	.script-expand {
+		margin-bottom: 0.75rem;
+		border: 1px solid #ddd;
+		border-radius: var(--radius-card);
+		overflow: hidden;
+	}
+	.script-expand summary {
+		cursor: pointer;
+		padding: 0.75rem 1rem;
+		font-weight: 700;
+		background: var(--color-bg);
+	}
+	.script-expand[open] summary {
+		border-bottom: 1px solid #ddd;
+	}
+	.script-frame {
+		width: 100%;
+		height: 70vh;
+		border: none;
+		display: block;
+	}
 	.share-wrap {
 		max-width: 680px;
 		margin: 1.5rem auto 0;
 	}
 </style>
+
+<script>
+	// default PDF viewer zoom: 80% on desktop (avoids the browser's default
+	// full-page-fit view), fit-to-width on mobile where a fixed 80% would be
+	// too small to read
+	function setScriptFrameZoom() {
+		document.querySelectorAll<HTMLIFrameElement>('.script-frame[data-src]').forEach((frame) => {
+			const base = frame.dataset.src;
+			if (!base) return;
+			const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+			frame.src = isDesktop ? `${base}#zoom=80` : `${base}#view=FitH`;
+		});
+	}
+	setScriptFrameZoom();
+	document.addEventListener('astro:page-load', setScriptFrameZoom);
+</script>

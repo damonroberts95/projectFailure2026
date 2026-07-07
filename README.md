@@ -45,8 +45,13 @@ Choosing to copy a submission over **is** the approval step — nothing else nee
 
 5. The site rebuilds automatically within a couple of minutes of pushing. No further steps.
 
-To unpublish a post, delete its file (same commit/push steps) or add `draft: true` as a
-fourth field in its frontmatter to hide it without deleting the file.
+To unpublish a post, delete its file (same commit/push steps) or add `draft: true` to
+its frontmatter to hide it without deleting the file.
+
+**`draft: true`** hides a post everywhere, permanently, until you remove the flag.
+**`test: true`** is different — it hides a post only from the *live* site. It still
+shows up when running `npm run dev` locally. Use this for example/placeholder content
+you want to keep around and preview, but never want a visitor to actually see.
 
 ## Adding or editing a sketch
 
@@ -70,6 +75,31 @@ Sketch description / synopsis goes here.
 PDFs go in `public/downloads/`; reference them with a path starting `/downloads/`.
 Thumbnails go in `public/images/`; same rule.
 
+Sketches also support `draft: true` and `test: true`, same meaning as for Wall of Fame
+posts — see above.
+
+### Automatic thumbnails
+
+If you don't set `ogImage`, the site generates a fallback thumbnail automatically
+(title + genre on a chalkboard, with an icon). It picks the icon by scanning the
+title/description/genre for keywords — or you can force a specific one with an
+`icon` field:
+
+```md
+icon: "lightning"
+```
+
+Available icon names: `flask` (default), `lightning`, `flame`, `atom`, `book`,
+`kettle`, `lightbulb`, `speech-bubble`, `star`, `skull`, `magnet`, `microscope`,
+`bug`.
+
+`icon` is ignored if `ogImage` is set — a hand-made thumbnail always wins.
+
+If you change an icon's drawing code (`scripts/lib/thumbnail.mjs`), run
+`npm run test:thumbnails` — it renders one preview per icon (forced, bypassing
+keyword matching) into `scripts/.thumbnail-previews/` (gitignored) so you can
+check every icon at a glance instead of hand-writing throwaway sketch entries.
+
 ## Local development
 
 ```sh
@@ -87,7 +117,7 @@ npm run build     # production build to ./dist
 │   ├── content/
 │   │   ├── sketches/     one .md file per sketch
 │   │   └── community/    one .md file per Wall of Fame post (+ _template.md)
-│   ├── components/       shared Astro components (SEO, share buttons, video embed)
+│   ├── components/       shared Astro components (SEO, share buttons, video embed, survey popup)
 │   ├── layouts/          page shell (nav, footer, global styles)
 │   └── pages/            routes: home, /sketches/, /wall-of-fame/
 ├── astro.config.mjs

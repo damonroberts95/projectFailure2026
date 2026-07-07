@@ -1,18 +1,24 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SurveyModal from '../components/SurveyModal.astro';
 import { getCollection } from 'astro:content';
+import { isPublished } from '../lib/publish';
 
-const SURVEY_URL = 'https://survey123.arcgis.com/share/796b4aba20994178b0a272d94f536577?portalUrl=https://ngexplore.maps.arcgis.com';
-
-const sketches = (await getCollection('sketches', ({ data }) => !data.draft)).sort(
+const sketches = (await getCollection('sketches', ({ data }) => isPublished(data))).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
-const latestSketch = sketches[0];
-
-const signposts = [
-	{ href: '/sketches/', label: 'Watch the sketches', description: 'Science history, re-enacted badly on purpose.' },
-	{ href: '/wall-of-fame/', label: 'Wall of Fame', description: 'Real failed experiments, shared by our community.' },
-];
+const MAX_SLOTS = 6;
+// server-rendered fallback (no-JS, first paint): most recent, up to MAX_SLOTS.
+// A script below decides how many of these slots to actually show based on
+// viewport width, and fills the visible ones with a random pick.
+const featured = sketches.slice(0, MAX_SLOTS);
+const sketchPicks = sketches.map((s) => ({
+	href: `/sketches/${s.id}/`,
+	title: s.data.title,
+	description: s.data.description,
+	genre: s.data.genre,
+	thumb: s.data.ogImage ?? `/images/generated/${s.id}.png`,
+}));
 ---
 
 <BaseLayout
@@ -20,79 +26,109 @@ const signposts = [
 	description="Comedy sketches educating people about science, one bad experiment at a time."
 	footerShare
 >
-	<div class="layout">
-		<div class="main-col">
-			<div class="hero">
-				<h1>Project Failure</h1>
-				<!-- TODO: draft copy below, needs client approval -->
-				<p>
-					Most of history's biggest scientific discoveries started with someone making a mess.
-					Project Failure re-enacts real science history — badly, on purpose — to prove that
-					getting it wrong is often exactly how you get it right.
-				</p>
-			</div>
+	<div class="hero">
+		<h1>Project Failure</h1>
+		<!-- TODO: draft copy below, needs client approval -->
+		<p>
+			Most of history's biggest scientific discoveries started with someone making a mess.
+			Project Failure re-enacts real science history — badly, on purpose — to prove that
+			getting it wrong is often exactly how you get it right.
+		</p>
+	</div>
 
-			<section class="mishap-report">
-				<div class="mishap-card">
-					<h2>Got your own science fail?</h2>
-					<p>Tell us what went wrong (and what you learned anyway).</p>
-					<a class="button" href={SURVEY_URL} target="_blank" rel="noopener noreferrer">Report a mishap</a>
+	{
+		featured.length > 0 && (
+			<section class="now-screening" id="now-screening">
+				<div class="now-screening-head">
+					<span class="tag">Now screening</span>
+					<a class="browse-all" href="/sketches/">
+						Browse all sketches &rarr;
+					</a>
 				</div>
-			</section>
-
-			<nav class="signposts">
-				{
-					signposts.map((item, i) => (
-						<a class={`signpost accent-${i % 2}`} href={item.href}>
-							<strong>{item.label}</strong>
-							<span>{item.description}</span>
+				<div class="screen-grid" id="screening-grid">
+					{featured.map((s) => (
+						<a class="screen-card" href={`/sketches/${s.id}/`}>
+							<img src={s.data.ogImage ?? `/images/generated/${s.id}.png`} alt="" loading="lazy" />
+							<div class="screen-card-body">
+								<span class="genre">{s.data.genre}</span>
+								<strong>{s.data.title}</strong>
+							</div>
 						</a>
-					))
-				}
-			</nav>
-		</div>
+					))}
+				</div>
+				<script type="application/json" id="sketch-picks" set:html={JSON.stringify(sketchPicks)} />
+			</section>
+		)
+	}
 
-		{
-			latestSketch && (
-				<aside class="sidebar">
-					<div class="now-screening">
-						<span class="tag">Now screening</span>
-						<a href={`/sketches/${latestSketch.id}/`}>{latestSketch.data.title}</a>
-						<p>{latestSketch.data.description}</p>
-					</div>
-				</aside>
-			)
-		}
+	<div class="chalkboard mishap-report">
+		<h2>Got your own science fail?</h2>
+		<p>Every scientist has a story about the experiment that went sideways. Share yours and it might end up on the wall.</p>
+		<div class="mishap-actions">
+			<SurveyModal />
+			<a class="sticky-link" href="/wall-of-fame/">See the Wall of Fame &rarr;</a>
+		</div>
 	</div>
 </BaseLayout>
 
-<style>
-	.layout {
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-	}
-	.main-col {
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-		min-width: 0;
-	}
-	@media (min-width: 800px) {
-		.layout {
-			flex-direction: row;
-			align-items: flex-start;
+<script>
+	function shuffle<T>(arr: T[]): T[] {
+		const copy = [...arr];
+		for (let i = copy.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[copy[i], copy[j]] = [copy[j], copy[i]];
 		}
-		.main-col {
-			flex: 1;
-		}
-		.sidebar {
-			flex: 0 0 260px;
-			position: sticky;
-			top: 1.5rem;
-		}
+		return copy;
 	}
 
+	// Updates the existing server-rendered card slots in place rather than
+	// rebuilding via innerHTML — Astro's scoped CSS only attaches to elements
+	// present at build time, so freshly-injected HTML would render unstyled.
+	// How many slots are shown (not just how they wrap) is reactive to the
+	// widget's own width, so mobile shows fewer cards instead of a cramped row.
+	function updateScreeningGrid() {
+		const grid = document.getElementById('screening-grid');
+		const dataEl = document.getElementById('sketch-picks');
+		if (!grid || !dataEl) return;
+		const picks = JSON.parse(dataEl.textContent || '[]');
+		const slots = Array.from(grid.querySelectorAll<HTMLAnchorElement>('.screen-card'));
+		if (picks.length === 0 || slots.length === 0) return;
+
+		const CARD_MIN_WIDTH = 190; // keep in sync with the grid's minmax()
+		const containerWidth = grid.clientWidth || window.innerWidth;
+		const perRow = Math.max(1, Math.floor(containerWidth / CARD_MIN_WIDTH));
+		const visibleCount = Math.min(slots.length, picks.length, perRow);
+
+		const chosen = shuffle(picks).slice(0, visibleCount);
+		slots.forEach((card, i) => {
+			if (i >= visibleCount) {
+				card.style.display = 'none';
+				return;
+			}
+			card.style.display = '';
+			const pick = chosen[i];
+			card.setAttribute('href', pick.href);
+			const img = card.querySelector('img');
+			const genre = card.querySelector('.genre');
+			const title = card.querySelector('strong');
+			if (img) img.setAttribute('src', pick.thumb);
+			if (genre) genre.textContent = pick.genre;
+			if (title) title.textContent = pick.title;
+		});
+	}
+
+	let resizeTimer: ReturnType<typeof setTimeout>;
+	function onResize() {
+		clearTimeout(resizeTimer);
+		resizeTimer = setTimeout(updateScreeningGrid, 150);
+	}
+
+	updateScreeningGrid();
+	document.addEventListener('astro:page-load', updateScreeningGrid);
+	window.addEventListener('resize', onResize);
+</script>
+
+<style>
 	.hero {
 		position: relative;
 		padding: 1.5rem 1.5rem 0.5rem;
@@ -120,87 +156,92 @@ const signposts = [
 		transform: rotate(5deg);
 	}
 
+	/* cinema marquee: near-black with a row of warm marquee bulbs along the top */
 	.now-screening {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 0.5rem;
-		background: var(--color-board);
+		margin-top: 2rem;
+		position: relative;
+		background: #171310;
+		background-image: radial-gradient(circle at 50% 0%, rgba(255, 206, 69, 0.06), transparent 60%);
 		color: #fff;
-		padding: 1.25rem;
+		padding: 1.75rem 1.5rem 1.5rem;
 		border-radius: var(--radius-card);
 		box-shadow: var(--shadow-card);
+		border-top: 6px solid #000;
 	}
-	.now-screening a {
-		color: #fff !important;
-		text-decoration-color: var(--color-accent) !important;
-		font-weight: bold;
-		font-size: 1.1rem;
+	.now-screening::before {
+		content: '';
+		position: absolute;
+		top: -3px;
+		left: 12px;
+		right: 12px;
+		height: 6px;
+		background-image: radial-gradient(circle, var(--color-accent) 2px, transparent 2.5px);
+		background-size: 18px 6px;
+		background-repeat: repeat-x;
+		opacity: 0.9;
 	}
-	.now-screening p {
-		margin: 0;
-		color: #cfd8d3;
-		font-size: 0.9rem;
+	.now-screening-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-bottom: 1.25rem;
 	}
 	.now-screening .tag {
+		display: inline-block;
 		font-family: var(--font-heading);
+		line-height: 1.3;
 		background: var(--color-spark);
-		color: #1a1a1a;
-		padding: 0.2rem 0.6rem;
+		color: var(--color-ink);
+		padding: 0.3rem 0.7rem;
 		border-radius: 3px;
-		font-size: 0.8rem;
+		font-size: 0.9rem;
 		white-space: nowrap;
 	}
+	.now-screening .browse-all {
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--color-accent) !important;
+		text-decoration-color: var(--color-accent) !important;
+	}
+	.now-screening .screen-card {
+		--punch-bg: #171310;
+		box-shadow: none;
+	}
 
-	/* hazard stripe as a border frame, matching the chalkboard-frame pattern on Wall of Fame */
+	/* matches the Wall of Fame page: chalkboard frame + marker-button + a small
+	   sticky-note-styled secondary link, instead of a one-off hazard-stripe card */
 	.mishap-report {
 		margin-top: 2rem;
-		padding: 10px;
-		border-radius: calc(var(--radius-card) + 6px);
-		background: repeating-linear-gradient(
-			45deg,
-			var(--color-accent),
-			var(--color-accent) 12px,
-			#1a1a1a 12px,
-			#1a1a1a 24px
-		);
-	}
-	.mishap-card {
-		background: var(--color-bg);
-		border-radius: var(--radius-card);
-		padding: 1.5rem;
 		text-align: center;
 	}
-	.mishap-card h2 {
+	.mishap-report h2 {
 		margin-top: 0;
 	}
-	.mishap-card .button {
-		margin-top: 0.5rem;
-	}
-
-	.signposts {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 1rem;
-		margin-top: 2rem;
-	}
-	.signpost {
+	.mishap-actions {
 		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-		padding: 1rem;
-		background: #fff;
-		border-radius: var(--radius-card);
-		border-left: 6px solid var(--color-accent);
-		box-shadow: var(--shadow-card);
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+	.sticky-link {
+		display: inline-block;
+		background: var(--color-note);
+		color: var(--color-ink) !important;
+		font-family: 'Caveat', cursive;
+		font-weight: 700;
+		font-size: 1.2rem;
+		padding: 0.4rem 0.9rem;
+		border-radius: 2px;
 		text-decoration: none !important;
-		color: var(--color-ink);
+		box-shadow: var(--shadow-sticker);
+		transform: rotate(2deg);
 		transition: transform 0.15s ease;
 	}
-	.signpost.accent-1 {
-		border-left-color: var(--color-spark);
-	}
-	.signpost:hover {
-		transform: translateY(-2px);
+	.sticky-link:hover {
+		transform: rotate(0deg) scale(1.04);
 	}
 </style>
