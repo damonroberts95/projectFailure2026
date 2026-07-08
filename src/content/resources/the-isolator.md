@@ -3,6 +3,7 @@ title: "The Isolator"
 pubDate: 2026-07-07
 description: A 1928 lab, a hungry assistant, and the accidental discovery of penicillin.
 genre: Science Comedy
+credits: Comedy sketch by Jubilian Ngaruwa, Thiago Silva, and Chloe Nunn, Edited by Laurence Pears
 pdfFile: /downloads/the-isolator-script.pdf
 ogImage: /images/the-isolator-thumb.png
 ---
