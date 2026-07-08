@@ -6,9 +6,9 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "predev": "node scripts/generate-thumbnails.mjs",
+    "predev": "node scripts/generate-thumbnails.mjs && node scripts/generate-script-pdfs.mjs",
     "dev": "astro dev",
-    "prebuild": "node scripts/generate-thumbnails.mjs",
+    "prebuild": "node scripts/generate-thumbnails.mjs && node scripts/generate-script-pdfs.mjs",
     "build": "astro build",
     "test:thumbnails": "node scripts/test-thumbnails.mjs",
     "preview": "npm run build && wrangler dev",

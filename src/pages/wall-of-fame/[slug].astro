@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ShareButtons from '../../components/ShareButtons.astro';
 import { getCollection, render } from 'astro:content';
-import { noteColor, foldCorner } from '../../lib/noteColor';
+import { noteColor, foldCorner, noteFont } from '../../lib/noteColor';
 import { isPublished } from '../../lib/publish';
 
 export async function getStaticPaths() {
@@ -22,7 +22,7 @@ const { Content } = await render(entry);
 
 	<article
 		class={`sticky-note-big fold-${foldCorner(entry.id)}`}
-		style={`--note-color: ${noteColor(entry.id)}`}
+		style={`--note-color: ${noteColor(entry.id)}; --note-font: ${noteFont(entry.id)}`}
 		transition:name={`note-${entry.id}`}
 	>
 		<h1>{entry.data.title}</h1>
@@ -85,7 +85,8 @@ const { Content } = await render(entry);
 		transform: scale(-1, -1);
 	}
 	.sticky-note-big h1 {
-		font-family: var(--font-heading);
+		font-family: var(--note-font);
+		font-size: 2.2rem;
 		color: var(--color-ink);
 	}
 	.date {

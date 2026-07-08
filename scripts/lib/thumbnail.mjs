@@ -496,13 +496,70 @@ const FONT = {
 	' ': ['.....', '.....', '.....', '.....', '.....', '.....', '.....'],
 };
 
+// covers the common Latin accented letters (acute/grave/circumflex/tilde/
+// diaeresis/cedilla) by drawing the unmodified base glyph — so it stays on the
+// same baseline and height as every other letter — plus a mark drawn one row
+// above or, for cedilla, appended one row below. Anything outside this set
+// (Polish/Czech/Turkish letters, ß, etc.) falls through to stripDiacritics
+// below instead of getting its own hand-drawn glyph.
+const TOP_MARK = {
+	acute: '....#',
+	grave: '#....',
+	circumflex: '..#..',
+	diaeresis: '.#.#.',
+	tilde: '.###.',
+};
+const ACCENTS = {
+	Á: ['A', 'acute'],
+	À: ['A', 'grave'],
+	Â: ['A', 'circumflex'],
+	Ã: ['A', 'tilde'],
+	Ä: ['A', 'diaeresis'],
+	É: ['E', 'acute'],
+	È: ['E', 'grave'],
+	Ê: ['E', 'circumflex'],
+	Ë: ['E', 'diaeresis'],
+	Í: ['I', 'acute'],
+	Ì: ['I', 'grave'],
+	Î: ['I', 'circumflex'],
+	Ï: ['I', 'diaeresis'],
+	Ó: ['O', 'acute'],
+	Ò: ['O', 'grave'],
+	Ô: ['O', 'circumflex'],
+	Õ: ['O', 'tilde'],
+	Ö: ['O', 'diaeresis'],
+	Ú: ['U', 'acute'],
+	Ù: ['U', 'grave'],
+	Û: ['U', 'circumflex'],
+	Ü: ['U', 'diaeresis'],
+	Ñ: ['N', 'tilde'],
+	Ý: ['Y', 'acute'],
+};
+FONT['Ç'] = [...FONT['C'], '..##.'];
+
+// anything still missing a glyph (rare Latin Extended letters, etc.) folds down
+// to its closest ASCII form rather than silently drawing nothing
+function stripDiacritics(ch) {
+	return ch.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 function drawText(pixels, text, x, y, scale, color, spacing = 1) {
 	let cursor = x;
-	for (const ch of text.toUpperCase()) {
-		const glyph = FONT[ch];
+	for (const rawCh of text.toUpperCase()) {
+		const accent = ACCENTS[rawCh];
+		const ch = accent ? accent[0] : rawCh;
+		const glyph = FONT[ch] ?? FONT[stripDiacritics(ch)];
 		if (!glyph) {
 			cursor += (5 + spacing) * scale;
 			continue;
+		}
+		if (accent) {
+			const markRow = TOP_MARK[accent[1]];
+			for (let col = 0; col < markRow.length; col++) {
+				if (markRow[col] === '#') {
+					fillRect(pixels, cursor + col * scale, y - scale, cursor + col * scale + scale, y, color);
+				}
+			}
 		}
 		for (let row = 0; row < glyph.length; row++) {
 			for (let col = 0; col < glyph[row].length; col++) {

@@ -1,4 +1,4 @@
-# Project Failure 
+# Project Failure
 
 Source for [www.projectfailure.co.uk](https://www.projectfailure.co.uk) — comedy resources
 educating people about science. Built with [Astro](https://astro.build), deployed on
@@ -55,50 +55,67 @@ you want to keep around and preview, but never want a visitor to actually see.
 
 ## Adding or editing a resource
 
-Resources live in `src/content/resources/`, one Markdown file per resource. Same file format as
-above, with extra optional fields:
+Resources are the sketches/videos/discussions page — one file per resource in
+`src/content/resources/`. Same process as a Wall of Fame post:
+
+1. Open `src/content/resources/_template.md`.
+2. Copy it, and rename the copy — delete the leading underscore, e.g. `the-isolator.md`.
+3. Fill in the fields. Every field is explained by a comment right above it in the
+   template — delete any you don't need. Only `title`, `pubDate`, and `description` are
+   required; everything else is optional.
+4. Save, then commit and push (same as a Wall of Fame post — see step 4 above, or edit the
+   file directly on GitHub.com).
+
+A filled-in example:
 
 ```md
 ---
 title: "The Isolator"
 pubDate: 2026-07-07
 description: "One sentence summary"
-genre: "Science Comedy"    # shown as a small tag on the resource, defaults to "Resource" if omitted
-youtubeId: "dQw4w9WgXcQ"   # optional — YouTube video ID to embed
-pdfFile: "/downloads/the-isolator-script.pdf"   # optional — link to a downloadable script PDF
-ogImage: "/images/the-isolator-thumb.png"   # optional — thumbnail shown on the card and social shares
+genre: "Science Comedy"    # small tag shown on the card, defaults to "Resource" if omitted
 ---
 
 Resource description / synopsis goes here.
 ```
 
-PDFs go in `public/downloads/`; reference them with a path starting `/downloads/`.
-Thumbnails go in `public/images/`; same rule.
-
 Resources also support `draft: true` and `test: true`, same meaning as for Wall of Fame
 posts — see above.
 
-### Automatic thumbnails
+### Got a script to publish?
 
-If you don't set `ogImage`, the site generates a fallback thumbnail automatically
-(title + genre on a chalkboard, with an icon). It picks the icon by scanning the
-title/description/genre for keywords — or you can force a specific one with an
-`icon` field:
+Set `script: true` and write the script itself as the body of the file, using this style:
+
+```md
+**Hu:** Please put the experiment down very carefully.
+
+*Al lifts a comically large petri dish from the table, staring at it in curiosity.*
+
+Two scientists are stood at a white-topped table.
+```
+
+- `**Name:**` at the start of a paragraph — that's a line of dialogue; the name renders bold.
+- A paragraph wrapped entirely in `*asterisks*` — a stage direction or action; renders italic.
+- Anything else — plain text (scene-setting, narration).
+
+The site turns this into a nicely formatted, downloadable PDF automatically — no need to
+format a script separately. Leave `script: false` (the default) for resources that aren't
+scripts; nothing extra happens. If you already have a script PDF made elsewhere, set
+`pdfFile` to its path instead (see the template) and skip `script` — that file is used as-is.
+Set `credits` too if you want a byline (writers, editor) under the title.
+
+### Thumbnails
+
+If you don't set `ogImage`, a thumbnail is generated automatically — title and genre on a
+little chalkboard, with a small icon. Pick a specific icon with the `icon` field:
 
 ```md
 icon: "lightning"
 ```
 
-Available icon names: `flask` (default), `lightning`, `flame`, `atom`, `book`,
+Available icons: `flask` (default), `lightning`, `flame`, `atom`, `book`,
 `kettle`, `lightbulb`, `speech-bubble`, `star`, `skull`, `magnet`, `microscope`,
-`bug`.
-
-`icon` is ignored if `ogImage` is set — a hand-made thumbnail always wins.
-
-If you change an icon's drawing code (`scripts/lib/thumbnail.mjs`), run
-`npm run test:thumbnails` — it renders one preview per icon (forced, bypassing
-keyword matching) into `scripts/.thumbnail-previews/` (gitignored) so you can
-check every icon at a glance instead of hand-writing throwaway resource entries.
+`bug`. Ignored if `ogImage` is set — a hand-made thumbnail always wins.
 
 ## Local development
 
@@ -108,6 +125,15 @@ npm run dev       # local dev server at localhost:4321
 npm run build     # production build to ./dist
 ```
 
+`npm run dev`/`npm run build` also regenerate thumbnails and script PDFs automatically
+(via the `predev`/`prebuild` hooks in package.json). If you start the dev server a
+different way (e.g. `astro dev` directly, bypassing npm), run those generators yourself
+first: `node scripts/generate-thumbnails.mjs && node scripts/generate-script-pdfs.mjs`.
+
+Changed an icon's drawing code in `scripts/lib/thumbnail.mjs`? Run `npm run test:thumbnails`
+to render one preview per icon into `scripts/.thumbnail-previews/` (gitignored) so you can
+check every icon at a glance.
+
 ## Project structure
 
 ```text
@@ -115,11 +141,12 @@ npm run build     # production build to ./dist
 ├── public/               static files (favicon, downloadable PDFs)
 ├── src/
 │   ├── content/
-│   │   ├── resources/    one .md file per resource
+│   │   ├── resources/    one .md file per resource (+ _template.md)
 │   │   └── community/    one .md file per Wall of Fame post (+ _template.md)
 │   ├── components/       shared Astro components (SEO, share buttons, video embed, survey popup)
 │   ├── layouts/          page shell (nav, footer, global styles)
 │   └── pages/            routes: home, /resources/, /wall-of-fame/
+├── scripts/              build-time generators (thumbnails, script PDFs) — see lib/ for the drawing/typesetting code
 ├── astro.config.mjs
 └── wrangler.jsonc        Cloudflare Workers deploy config
 ```

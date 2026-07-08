@@ -2,6 +2,8 @@
 dist/
 # auto-generated fallback thumbnails (regenerated on every build)
 public/images/generated/
+# auto-generated fallback script PDFs (regenerated on every build)
+public/downloads/generated/
 # per-icon test previews, run scripts/test-thumbnails.mjs to regenerate
 scripts/.thumbnail-previews/
 # generated types

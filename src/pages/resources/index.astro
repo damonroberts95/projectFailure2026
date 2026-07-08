@@ -16,7 +16,7 @@ const resources = (await getCollection('resources', ({ data }) => isPublished(da
 			resources.map((resource) => (
 				<li>
 					<a class="screen-card" href={`/resources/${resource.id}/`}>
-						<img src={resource.data.ogImage ?? `/images/generated/${resource.id}.png`} alt="" loading="lazy" />
+						<img src={resource.data.ogImage || `/images/generated/${resource.id}.png`} alt="" loading="lazy" />
 						<div class="screen-card-body">
 							<span class="genre">{resource.data.genre}</span>
 							<strong>{resource.data.title}</strong>

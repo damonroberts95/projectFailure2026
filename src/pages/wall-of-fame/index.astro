@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SurveyModal from '../../components/SurveyModal.astro';
 import { getCollection } from 'astro:content';
-import { noteColor, foldCorner } from '../../lib/noteColor';
+import { noteColor, foldCorner, noteFont } from '../../lib/noteColor';
 import { isPublished } from '../../lib/publish';
 
 const submissions = (await getCollection('community', ({ data }) => isPublished(data))).sort(
@@ -26,7 +26,7 @@ const submissions = (await getCollection('community', ({ data }) => isPublished(
 				submissions.map((entry, i) => (
 					<li
 						class={`sticky-note tilt-${i % 4} fold-${foldCorner(entry.id)}`}
-						style={`--note-color: ${noteColor(entry.id)}`}
+						style={`--note-color: ${noteColor(entry.id)}; --note-font: ${noteFont(entry.id)}`}
 						transition:name={`note-${entry.id}`}
 					>
 						<a href={`/wall-of-fame/${entry.id}/`}>
@@ -138,6 +138,11 @@ const submissions = (await getCollection('community', ({ data }) => isPublished(
 		color: var(--color-ink);
 		text-decoration: none;
 		display: block;
+	}
+	.sticky-note strong {
+		font-family: var(--note-font);
+		font-size: 1.3rem;
+		line-height: 1.2;
 	}
 	.tilt-0 {
 		transform: rotate(-3deg);

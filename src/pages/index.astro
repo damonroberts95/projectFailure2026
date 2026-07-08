@@ -17,7 +17,7 @@ const resourcePicks = resources.map((s) => ({
 	title: s.data.title,
 	description: s.data.description,
 	genre: s.data.genre,
-	thumb: s.data.ogImage ?? `/images/generated/${s.id}.png`,
+	thumb: s.data.ogImage || `/images/generated/${s.id}.png`,
 }));
 ---
 
@@ -45,7 +45,7 @@ const resourcePicks = resources.map((s) => ({
 				<div class="screen-grid" id="screening-grid">
 					{featured.map((s) => (
 						<a class="screen-card" href={`/resources/${s.id}/`}>
-							<img src={s.data.ogImage ?? `/images/generated/${s.id}.png`} alt="" loading="lazy" />
+							<img src={s.data.ogImage || `/images/generated/${s.id}.png`} alt="" loading="lazy" />
 							<div class="screen-card-body">
 								<span class="genre">{s.data.genre}</span>
 								<strong>{s.data.title}</strong>

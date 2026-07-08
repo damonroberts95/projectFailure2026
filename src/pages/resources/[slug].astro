@@ -15,7 +15,9 @@ export async function getStaticPaths() {
 
 const { resource } = Astro.props;
 const { Content } = await render(resource);
-const thumbnail = resource.data.ogImage ?? `/images/generated/${resource.id}.png`;
+const thumbnail = resource.data.ogImage || `/images/generated/${resource.id}.png`;
+const hasScript = resource.data.script || Boolean(resource.data.pdfFile);
+const scriptPdf = resource.data.pdfFile || `/downloads/generated/${resource.id}.pdf`;
 ---
 
 <BaseLayout
@@ -29,6 +31,7 @@ const thumbnail = resource.data.ogImage ?? `/images/generated/${resource.id}.png
 		<span class="tag">{resource.data.genre}</span>
 		<h1>{resource.data.title}</h1>
 		<p class="date">{resource.data.pubDate.toDateString()}</p>
+		{resource.data.credits && <p class="credits">{resource.data.credits}</p>}
 
 		{resource.data.youtubeId && <YouTubeEmbed videoId={resource.data.youtubeId} title={resource.data.title} />}
 
@@ -47,18 +50,13 @@ const thumbnail = resource.data.ogImage ?? `/images/generated/${resource.id}.png
 		</div>
 
 		{
-			resource.data.pdfFile && (
+			hasScript && (
 				<div class="script-block">
 					<details class="script-expand">
 						<summary>Read the script</summary>
-						<iframe
-							class="script-frame"
-							data-src={resource.data.pdfFile}
-							title={`${resource.data.title} script`}
-							loading="lazy"
-						/>
+						<iframe class="script-frame" data-src={scriptPdf} title={`${resource.data.title} script`} loading="lazy" />
 					</details>
-					<a class="button" href={resource.data.pdfFile}>
+					<a class="button" href={scriptPdf}>
 						Download the script (PDF)
 					</a>
 				</div>
@@ -97,6 +95,12 @@ const thumbnail = resource.data.ogImage ?? `/images/generated/${resource.id}.png
 	}
 	.date {
 		color: #666;
+	}
+	.credits {
+		color: #666;
+		font-size: 0.85rem;
+		font-style: italic;
+		margin-top: 0.15rem;
 	}
 	.hero-image {
 		width: 100%;
