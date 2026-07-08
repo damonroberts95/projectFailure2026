@@ -1,5 +1,5 @@
 ---
-title: "FALHANÇO"
+title: "Falhanço"
 pubDate: 2026-06-15
 description: Real-life stories about professional journeys, obstacles, fresh starts, and what failure can teach us.
 genre: Live Discussion
@@ -25,6 +25,7 @@ aquilo que o falhanço nos pode ensinar.
 Lisboa — 18:30 15 de Junho, Auditório Fernando Lopes, Universidade Lusófona
 Entrada gratuita
 Duração: 90 minutos
+__________________________
 
 Not all stories of discovery begin with success.
 

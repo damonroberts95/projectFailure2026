@@ -34,13 +34,15 @@ const instagramPath =
 	'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z';
 ---
 
-<div class="share-buttons">
-	<span class="label">Share this</span>
-	<div class="buttons">
+<!-- classes below avoid generic "share"/"social" naming that generic ad-blocker
+     cosmetic filter lists commonly target for widget hiding -->
+<div class="pf-share">
+	<span class="pf-share-label">Share this</span>
+	<div class="pf-share-row">
 		{
 			links.map((link) => (
 				<a
-					class={`share-btn icon-btn ${link.className}`}
+					class={`pf-btn pf-btn-icon ${link.className}`}
 					href={link.href}
 					target="_blank"
 					rel="noopener noreferrer"
@@ -53,18 +55,18 @@ const instagramPath =
 			))
 		}
 		<button
-				type="button"
-				class="share-btn icon-btn instagram"
-				data-instagram-share
-				data-share-title={title}
-				data-share-url={pageURL}
-				aria-label="Share on Instagram"
-			>
-				<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-					<path d={instagramPath} fill="currentColor" />
-				</svg>
-			</button>
-			<button type="button" class="share-btn copy" data-copy-url={pageURL}>
+			type="button"
+			class="pf-btn pf-btn-icon instagram"
+			data-native-share
+			data-share-title={title}
+			data-share-url={pageURL}
+			aria-label="Share on Instagram"
+		>
+			<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+				<path d={instagramPath} fill="currentColor" />
+			</svg>
+		</button>
+		<button type="button" class="pf-btn pf-btn-copy" data-copy-url={pageURL}>
 			<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
 				<path
 					d="M9 7h4a4 4 0 1 1 0 8h-2M15 17h-4a4 4 0 1 1 0-8h2"
@@ -74,14 +76,14 @@ const instagramPath =
 					stroke-linecap="round"
 				/>
 			</svg>
-			<span class="btn-label">Copy link</span>
+			<span class="pf-btn-text">Copy link</span>
 		</button>
 	</div>
 </div>
 
 <script>
 	document.querySelectorAll<HTMLButtonElement>('button[data-copy-url]').forEach((button) => {
-		const label = button.querySelector<HTMLSpanElement>('.btn-label');
+		const label = button.querySelector<HTMLSpanElement>('.pf-btn-text');
 		button.addEventListener('click', async () => {
 			const url = button.dataset.copyUrl;
 			if (!url || !label) return;
@@ -94,7 +96,7 @@ const instagramPath =
 		});
 	});
 
-	document.querySelectorAll<HTMLButtonElement>('button[data-instagram-share]').forEach((button) => {
+	document.querySelectorAll<HTMLButtonElement>('button[data-native-share]').forEach((button) => {
 		button.addEventListener('click', async () => {
 			const url = button.dataset.shareUrl;
 			const title = button.dataset.shareTitle;
@@ -113,31 +115,32 @@ const instagramPath =
 			// desktop fallback: Instagram has no web share-intent URL, so copy the
 			// link for the visitor to paste into a Story/DM themselves
 			await navigator.clipboard.writeText(url);
-			button.classList.add('copied');
-			setTimeout(() => button.classList.remove('copied'), 1500);
+			button.classList.add('pf-btn-done');
+			setTimeout(() => button.classList.remove('pf-btn-done'), 1500);
 		});
 	});
 </script>
 
 <style>
-	.share-buttons {
+	.pf-share {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
+		justify-content: center;
 		gap: 0.75rem;
 	}
-	.label {
+	.pf-share-label {
 		font-weight: 600;
 		font-size: 0.9rem;
 		color: var(--color-ink);
 	}
-	.buttons {
+	.pf-share-row {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.5rem;
 	}
-	.share-btn {
+	.pf-btn {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.4rem;
@@ -151,17 +154,17 @@ const instagramPath =
 			transform 0.15s ease,
 			box-shadow 0.15s ease;
 	}
-	.share-btn:hover {
+	.pf-btn:hover {
 		transform: translateY(-2px);
 		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 	}
-	.icon-btn {
+	.pf-btn-icon {
 		position: relative;
 		width: 34px;
 		height: 34px;
 		justify-content: center;
 	}
-	.share-btn.copied::after {
+	.pf-btn.pf-btn-done::after {
 		content: 'Link copied!';
 		position: absolute;
 		bottom: 120%;
@@ -176,28 +179,26 @@ const instagramPath =
 		white-space: nowrap;
 		pointer-events: none;
 	}
-	.copy {
+	.pf-btn-copy {
 		padding: 0.4rem 0.9rem;
 		font-size: 0.85rem;
 		font-weight: 700;
 		font-family: var(--font-body);
-	}
-	.share-btn.x {
-		background: #15181c;
-	}
-	.share-btn.facebook {
-		background: #1877f2;
-	}
-	.share-btn.instagram {
-		background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
-	}
-	.share-btn.whatsapp {
-		/* white icon on brand green fails contrast (1.98:1) — dark icon instead */
-		background: #25d366;
+		background: var(--color-accent);
 		color: var(--color-ink);
 	}
-	.share-btn.copy {
-		background: var(--color-accent);
+	.pf-btn.x {
+		background: #15181c;
+	}
+	.pf-btn.facebook {
+		background: #1877f2;
+	}
+	.pf-btn.instagram {
+		background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+	}
+	.pf-btn.whatsapp {
+		/* white icon on brand green fails contrast (1.98:1) — dark icon instead */
+		background: #25d366;
 		color: var(--color-ink);
 	}
 </style>
