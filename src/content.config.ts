@@ -1,8 +1,8 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-const sketches = defineCollection({
-	loader: glob({ pattern: '**/*.md', base: './src/content/sketches' }),
+const resources = defineCollection({
+	loader: glob({ pattern: '**/*.md', base: './src/content/resources' }),
 	schema: z.object({
 		title: z.string(),
 		pubDate: z.coerce.date(),
@@ -11,7 +11,7 @@ const sketches = defineCollection({
 		// shows locally (astro dev), hidden from production builds — for example/
 		// throwaway content, see src/lib/publish.ts
 		test: z.boolean().default(false),
-		genre: z.string().default('Sketch'),
+		genre: z.string().default('Resource'),
 		tags: z.array(z.string()).default([]),
 		ogImage: z.string().optional(),
 		// picks the auto-generated fallback thumbnail's icon; ignored if ogImage is set.
@@ -37,4 +37,4 @@ const community = defineCollection({
 	}),
 });
 
-export const collections = { sketches, community };
+export const collections = { resources, community };

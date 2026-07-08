@@ -4,16 +4,16 @@ import SurveyModal from '../components/SurveyModal.astro';
 import { getCollection } from 'astro:content';
 import { isPublished } from '../lib/publish';
 
-const sketches = (await getCollection('sketches', ({ data }) => isPublished(data))).sort(
+const resources = (await getCollection('resources', ({ data }) => isPublished(data))).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 const MAX_SLOTS = 6;
 // server-rendered fallback (no-JS, first paint): most recent, up to MAX_SLOTS.
 // A script below decides how many of these slots to actually show based on
 // viewport width, and fills the visible ones with a random pick.
-const featured = sketches.slice(0, MAX_SLOTS);
-const sketchPicks = sketches.map((s) => ({
-	href: `/sketches/${s.id}/`,
+const featured = resources.slice(0, MAX_SLOTS);
+const resourcePicks = resources.map((s) => ({
+	href: `/resources/${s.id}/`,
 	title: s.data.title,
 	description: s.data.description,
 	genre: s.data.genre,
@@ -23,16 +23,13 @@ const sketchPicks = sketches.map((s) => ({
 
 <BaseLayout
 	title="Home"
-	description="Comedy sketches educating people about science, one bad experiment at a time."
+	description="Comedy resources educating people about science, one bad experiment at a time."
 	footerShare
 >
 	<div class="hero">
-		<h1>Project Failure</h1>
-		<!-- TODO: draft copy below, needs client approval -->
+		<h1>What we're about:</h1>
 		<p>
-			Most of history's biggest scientific discoveries started with someone making a mess.
-			Project Failure re-enacts real science history — badly, on purpose — to prove that
-			getting it wrong is often exactly how you get it right.
+			Most of history's biggest scientific discoveries started with someone making a mess. Project Failure re-enacts real science history — badly, on purpose — to prove that getting it wrong is often exactly how you get it right. We want to challenge the idea that the only good to come of making a mistake, is the lesson learnt. Our resources help people be proud of their “failures” and value the humour, self-awareness, and collaborator closeness they bring too!
 		</p>
 	</div>
 
@@ -41,13 +38,13 @@ const sketchPicks = sketches.map((s) => ({
 			<section class="now-screening" id="now-screening">
 				<div class="now-screening-head">
 					<span class="tag">Now screening</span>
-					<a class="browse-all" href="/sketches/">
-						Browse all sketches &rarr;
+					<a class="browse-all" href="/resources/">
+						Browse all resources &rarr;
 					</a>
 				</div>
 				<div class="screen-grid" id="screening-grid">
 					{featured.map((s) => (
-						<a class="screen-card" href={`/sketches/${s.id}/`}>
+						<a class="screen-card" href={`/resources/${s.id}/`}>
 							<img src={s.data.ogImage ?? `/images/generated/${s.id}.png`} alt="" loading="lazy" />
 							<div class="screen-card-body">
 								<span class="genre">{s.data.genre}</span>
@@ -56,7 +53,7 @@ const sketchPicks = sketches.map((s) => ({
 						</a>
 					))}
 				</div>
-				<script type="application/json" id="sketch-picks" set:html={JSON.stringify(sketchPicks)} />
+				<script type="application/json" id="resource-picks" set:html={JSON.stringify(resourcePicks)} />
 			</section>
 		)
 	}
@@ -88,7 +85,7 @@ const sketchPicks = sketches.map((s) => ({
 	// widget's own width, so mobile shows fewer cards instead of a cramped row.
 	function updateScreeningGrid() {
 		const grid = document.getElementById('screening-grid');
-		const dataEl = document.getElementById('sketch-picks');
+		const dataEl = document.getElementById('resource-picks');
 		if (!grid || !dataEl) return;
 		const picks = JSON.parse(dataEl.textContent || '[]');
 		const slots = Array.from(grid.querySelectorAll<HTMLAnchorElement>('.screen-card'));

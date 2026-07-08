@@ -6,37 +6,37 @@ import { getCollection, render } from 'astro:content';
 import { isPublished } from '../../lib/publish';
 
 export async function getStaticPaths() {
-	const sketches = await getCollection('sketches', ({ data }) => isPublished(data));
-	return sketches.map((sketch) => ({
-		params: { slug: sketch.id },
-		props: { sketch },
+	const resources = await getCollection('resources', ({ data }) => isPublished(data));
+	return resources.map((resource) => ({
+		params: { slug: resource.id },
+		props: { resource },
 	}));
 }
 
-const { sketch } = Astro.props;
-const { Content } = await render(sketch);
-const thumbnail = sketch.data.ogImage ?? `/images/generated/${sketch.id}.png`;
+const { resource } = Astro.props;
+const { Content } = await render(resource);
+const thumbnail = resource.data.ogImage ?? `/images/generated/${resource.id}.png`;
 ---
 
 <BaseLayout
-	title={sketch.data.title}
-	description={sketch.data.description}
+	title={resource.data.title}
+	description={resource.data.description}
 	image={thumbnail}
 	type="article"
 >
-	<a class="back-link" href="/sketches/">&larr; Back to Sketches</a>
+	<a class="back-link" href="/resources/">&larr; Back to Resources</a>
 	<article class="card">
-		<span class="tag">{sketch.data.genre}</span>
-		<h1>{sketch.data.title}</h1>
-		<p class="date">{sketch.data.pubDate.toDateString()}</p>
+		<span class="tag">{resource.data.genre}</span>
+		<h1>{resource.data.title}</h1>
+		<p class="date">{resource.data.pubDate.toDateString()}</p>
 
-		{sketch.data.youtubeId && <YouTubeEmbed videoId={sketch.data.youtubeId} title={sketch.data.title} />}
+		{resource.data.youtubeId && <YouTubeEmbed videoId={resource.data.youtubeId} title={resource.data.title} />}
 
-		{!sketch.data.youtubeId && <img class="hero-image" src={thumbnail} alt="" />}
+		{!resource.data.youtubeId && <img class="hero-image" src={thumbnail} alt="" />}
 
 		{
-			sketch.data.audioUrl && (
-				<audio controls src={sketch.data.audioUrl}>
+			resource.data.audioUrl && (
+				<audio controls src={resource.data.audioUrl}>
 					Your browser does not support the audio element.
 				</audio>
 			)
@@ -47,18 +47,18 @@ const thumbnail = sketch.data.ogImage ?? `/images/generated/${sketch.id}.png`;
 		</div>
 
 		{
-			sketch.data.pdfFile && (
+			resource.data.pdfFile && (
 				<div class="script-block">
 					<details class="script-expand">
 						<summary>Read the script</summary>
 						<iframe
 							class="script-frame"
-							data-src={sketch.data.pdfFile}
-							title={`${sketch.data.title} script`}
+							data-src={resource.data.pdfFile}
+							title={`${resource.data.title} script`}
 							loading="lazy"
 						/>
 					</details>
-					<a class="button" href={sketch.data.pdfFile}>
+					<a class="button" href={resource.data.pdfFile}>
 						Download the script (PDF)
 					</a>
 				</div>
@@ -66,7 +66,7 @@ const thumbnail = sketch.data.ogImage ?? `/images/generated/${sketch.id}.png`;
 		}
 	</article>
 	<div class="share-wrap">
-		<ShareButtons title={sketch.data.title} />
+		<ShareButtons title={resource.data.title} />
 	</div>
 </BaseLayout>
 

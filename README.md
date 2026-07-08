@@ -1,6 +1,6 @@
 # Project Failure 
 
-Source for [www.projectfailure.co.uk](https://www.projectfailure.co.uk) — comedy sketches
+Source for [www.projectfailure.co.uk](https://www.projectfailure.co.uk) — comedy resources
 educating people about science. Built with [Astro](https://astro.build), deployed on
 Cloudflare Workers via a GitHub-connected build (push to `main` deploys automatically).
 
@@ -53,9 +53,9 @@ its frontmatter to hide it without deleting the file.
 shows up when running `npm run dev` locally. Use this for example/placeholder content
 you want to keep around and preview, but never want a visitor to actually see.
 
-## Adding or editing a sketch
+## Adding or editing a resource
 
-Sketches live in `src/content/sketches/`, one Markdown file per sketch. Same file format as
+Resources live in `src/content/resources/`, one Markdown file per resource. Same file format as
 above, with extra optional fields:
 
 ```md
@@ -63,19 +63,19 @@ above, with extra optional fields:
 title: "The Isolator"
 pubDate: 2026-07-07
 description: "One sentence summary"
-genre: "Science Comedy"    # shown as a small tag on the sketch, defaults to "Sketch" if omitted
+genre: "Science Comedy"    # shown as a small tag on the resource, defaults to "Resource" if omitted
 youtubeId: "dQw4w9WgXcQ"   # optional — YouTube video ID to embed
 pdfFile: "/downloads/the-isolator-script.pdf"   # optional — link to a downloadable script PDF
 ogImage: "/images/the-isolator-thumb.png"   # optional — thumbnail shown on the card and social shares
 ---
 
-Sketch description / synopsis goes here.
+Resource description / synopsis goes here.
 ```
 
 PDFs go in `public/downloads/`; reference them with a path starting `/downloads/`.
 Thumbnails go in `public/images/`; same rule.
 
-Sketches also support `draft: true` and `test: true`, same meaning as for Wall of Fame
+Resources also support `draft: true` and `test: true`, same meaning as for Wall of Fame
 posts — see above.
 
 ### Automatic thumbnails
@@ -98,7 +98,7 @@ Available icon names: `flask` (default), `lightning`, `flame`, `atom`, `book`,
 If you change an icon's drawing code (`scripts/lib/thumbnail.mjs`), run
 `npm run test:thumbnails` — it renders one preview per icon (forced, bypassing
 keyword matching) into `scripts/.thumbnail-previews/` (gitignored) so you can
-check every icon at a glance instead of hand-writing throwaway sketch entries.
+check every icon at a glance instead of hand-writing throwaway resource entries.
 
 ## Local development
 
@@ -115,11 +115,11 @@ npm run build     # production build to ./dist
 ├── public/               static files (favicon, downloadable PDFs)
 ├── src/
 │   ├── content/
-│   │   ├── sketches/     one .md file per sketch
+│   │   ├── resources/    one .md file per resource
 │   │   └── community/    one .md file per Wall of Fame post (+ _template.md)
 │   ├── components/       shared Astro components (SEO, share buttons, video embed, survey popup)
 │   ├── layouts/          page shell (nav, footer, global styles)
-│   └── pages/            routes: home, /sketches/, /wall-of-fame/
+│   └── pages/            routes: home, /resources/, /wall-of-fame/
 ├── astro.config.mjs
 └── wrangler.jsonc        Cloudflare Workers deploy config
 ```

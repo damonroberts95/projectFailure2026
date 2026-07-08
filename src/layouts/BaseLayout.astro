@@ -15,7 +15,7 @@ const { title, description, image, type, footerShare = false } = Astro.props;
 
 const nav = [
 	{ href: '/', label: 'Home' },
-	{ href: '/sketches/', label: 'Sketches' },
+	{ href: '/resources/', label: 'Resources' },
 	{ href: '/wall-of-fame/', label: 'Wall of Fame' },
 ];
 ---
@@ -263,7 +263,7 @@ const nav = [
 	}
 
 	/* shared "screening card" — ticket-stub thumbnail card, used by the homepage
-	   Now Screening widget and the /sketches/ list so both match */
+	   Now Screening widget and the /resources/ list so both match */
 	.screen-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

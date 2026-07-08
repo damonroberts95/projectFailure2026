@@ -422,7 +422,7 @@ function drawBug(pixels, ox, oy, scale) {
 	fillRect(pixels, sx(16) - Math.round(0.5 * scale), sy(15), sx(16) + Math.round(0.5 * scale), sy(24), OUTLINE);
 }
 
-// local "icon library" — pick the most relevant hand-drawn icon for the sketch's
+// local "icon library" — pick the most relevant hand-drawn icon for the resource's
 // content instead of always defaulting to the flask. No external icon set: keeps
 // the same zero-dependency pixel-art technique as the rest of this script.
 export const ICON_LIBRARY = {

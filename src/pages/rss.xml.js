@@ -3,20 +3,20 @@ import { getCollection } from 'astro:content';
 import { isPublished } from '../lib/publish';
 
 export async function GET(context) {
-	const sketches = await getCollection('sketches', ({ data }) => isPublished(data));
+	const resources = await getCollection('resources', ({ data }) => isPublished(data));
 
-	const items = sketches
-		.map((sketch) => ({
-			title: sketch.data.title,
-			description: sketch.data.description,
-			pubDate: sketch.data.pubDate,
-			link: `/sketches/${sketch.id}/`,
+	const items = resources
+		.map((resource) => ({
+			title: resource.data.title,
+			description: resource.data.description,
+			pubDate: resource.data.pubDate,
+			link: `/resources/${resource.id}/`,
 		}))
 		.sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf());
 
 	return rss({
 		title: 'Project Failure',
-		description: 'Comedy sketches educating people about science.',
+		description: 'Comedy resources educating people about science.',
 		site: context.site,
 		items,
 	});
