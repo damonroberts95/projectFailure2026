@@ -81,6 +81,26 @@ Resource description / synopsis goes here.
 Resources also support `draft: true` and `test: true`, same meaning as for Wall of Fame
 posts — see above.
 
+### All the optional header fields
+
+Only `title`, `pubDate`, and `description` are required. Everything else in the `---`
+header is optional — uncomment the line in `_template.md` and fill it in only if you're
+using it (see the comment block at the top of the template for why leaving a field as
+`""` instead of deleting it can break things).
+
+| Field | What it does |
+| --- | --- |
+| `draft` | `true` hides the post everywhere, permanently, until removed. |
+| `test` | `true` hides the post from the *live* site only — it still shows locally under `npm run dev`. Use for placeholder content you want to preview but never publish. |
+| `genre` | Small tag shown on the card and detail page. Defaults to `"Resource"` if omitted. |
+| `script` | `true` if this resource has a script to publish — adds a "Read the script" block to the page. See "Got a script to publish?" below. |
+| `credits` | Byline shown under the title, e.g. `"Comedy sketch by A, B, and C. Edited by D."` Also used on an auto-generated script PDF. |
+| `youtubeId` | Embeds a YouTube video — the part of the URL after `?v=`. |
+| `audioUrl` | Embeds an audio file — path under `public/`, starting with `/`. |
+| `pdfFile` | Use a hand-made script PDF instead of auto-generating one — path under `public/downloads/`, starting with `/downloads/`. Implies `script`, no need to also set that. |
+| `ogImage` | Hand-made thumbnail for the card and social shares — path under `public/images/`, starting with `/images/`. Otherwise one is auto-generated (see "Thumbnails" below). |
+| `icon` | Picks the auto-generated thumbnail's icon. Ignored if `ogImage` is set. See "Thumbnails" below for the list of icons. |
+
 ### Got a script to publish?
 
 Set `script: true` and write the script itself as the body of the file, using this style:
