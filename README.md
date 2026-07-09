@@ -7,9 +7,8 @@ Cloudflare Workers via a GitHub-connected build (push to `main` deploys automati
 ## Adding a Wall of Fame post
 
 Wall of Fame ("Wall of Shame") is the sticky-note wall of science-fail stories people submit
-through the [Survey123 form](https://survey123.arcgis.com/share/796b4aba20994178b0a272d94f536577?portalUrl=https://ngexplore.maps.arcgis.com).
-Publishing one is: pick a story you want to share, copy it into a file, commit, push.
-Choosing to copy a submission over **is** the approval step — nothing else needed.
+through the an embedded Survey123 Form. 
+Publishing one manual: pick a story you want to share, copy it into a file, commit, push.
 
 1. Open `src/content/community/_template.md`.
 2. Copy it, and rename the copy — delete the leading underscore, e.g. `2026-07-07-jane-doe.md`.
@@ -46,7 +45,7 @@ Choosing to copy a submission over **is** the approval step — nothing else nee
 5. The site rebuilds automatically within a couple of minutes of pushing. No further steps.
 
 To unpublish a post, delete its file (same commit/push steps) or add `draft: true` to
-its frontmatter to hide it without deleting the file.
+its header to hide it without deleting the file.
 
 **`draft: true`** hides a post everywhere, permanently, until you remove the flag.
 **`test: true`** is different — it hides a post only from the *live* site. It still
