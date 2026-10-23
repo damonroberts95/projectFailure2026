@@ -11,7 +11,7 @@ interface Props {
 const { title, description, heading, message } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} noindex>
 	<div class="chalkboard error-board">
 		<span class="tag">Experiment failed</span>
 		<h1>{heading}</h1>
